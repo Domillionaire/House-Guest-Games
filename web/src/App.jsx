@@ -842,11 +842,12 @@ function GamesBridgeSection({ onEnter }) {
   ];
 
   return (
-    <div className="relative overflow-hidden rounded-[3rem] bg-[#dfe9ee] shadow-[0_26px_90px_rgba(33,53,71,0.10)]">
+    <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden bg-[#dfe9ee]">
       <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(223,233,238,0.18)_0%,rgba(223,233,238,0.04)_14%,rgba(223,233,238,0.04)_86%,rgba(223,233,238,0.18)_100%)]" />
 
-      <section className="relative m-4 overflow-hidden rounded-[2.5rem] bg-[rgba(13,29,42,0.88)] shadow-[0_22px_70px_rgba(0,0,0,0.12)] backdrop-blur-[2px] md:m-5">
+      <section className="relative mx-auto my-4 max-w-7xl overflow-hidden rounded-[2.5rem] bg-[rgba(13,29,42,0.88)] shadow-[0_22px_70px_rgba(0,0,0,0.12)] backdrop-blur-[2px] md:my-5">
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,20,30,0.94)_0%,rgba(8,20,30,0.84)_34%,rgba(8,20,30,0.76)_100%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(157,204,226,0.08),transparent_26%)]" />
 
