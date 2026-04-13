@@ -843,7 +843,7 @@ function GamesBridgeSection({ onEnter }) {
 
   return (
     <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden bg-[#dfe9ee]">
-      <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+      <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute left-0 top-[-6%] h-[112%] w-full object-cover object-center" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(223,233,238,0.18)_0%,rgba(223,233,238,0.04)_14%,rgba(223,233,238,0.04)_86%,rgba(223,233,238,0.18)_100%)]" />
 
