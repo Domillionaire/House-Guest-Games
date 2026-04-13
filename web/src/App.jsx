@@ -737,40 +737,14 @@ function LandingExperience({ onEnter }) {
           <div className={`absolute inset-0 bg-[#fadb4e] transition-all duration-700 ${introExiting ? "opacity-45 scale-[1.25]" : "opacity-0 scale-100"}`} />
 
           <div className="relative z-10 flex min-h-screen flex-col justify-between px-6 py-6 md:px-10 md:py-8">
-            <div className="flex items-start justify-between gap-4">
-              <div className="inline-flex rounded-full border border-white/16 bg-[#fadb4e] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#173149] shadow-[0_10px_24px_rgba(0,0,0,0.08)]" style={cleanSans}>
-                Hey neighbor!
-              </div>
+            <div className="flex items-start justify-end">
               <button onClick={dismissIntro} className="rounded-full border border-white/16 bg-black/18 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/88 backdrop-blur transition hover:bg-black/28" style={cleanSans}>
                 skip intro
               </button>
             </div>
 
-            <div className="max-w-5xl pb-10 pt-24 md:pt-32">
-              <div className="text-[5.4rem] md:text-[7.8rem] xl:text-[9.4rem] leading-[0.78]">
-                <BrandWordmark stacked className="text-[inherit] leading-[inherit]" />
-              </div>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-white/88 md:text-lg" style={cleanSans}>
-                Make people laugh. Make people cry. See the stars in a new light. Then come inside and play what’s on screen.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <button onClick={dismissIntro} className="rounded-full bg-[#fadb4e] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_18px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
-                  come inside
-                </button>
-                <button onClick={enterTVRoom} className="rounded-full border border-white/16 bg-white/10 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/86 backdrop-blur transition hover:bg-white/18" style={cleanSans}>
-                  enter tv room
-                </button>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4 border-t border-white/14 pt-5 md:flex-row md:items-end md:justify-between">
-              <div>
-                <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/68" style={cleanSans}>theme line</div>
-                <div className="mt-2 text-2xl leading-none text-[#fadb4e] md:text-3xl" style={showDisplay}>HEY NEIGHBOR, COME INSIDE</div>
-              </div>
-              <div className="max-w-md text-sm leading-6 text-white/78 md:text-right" style={cleanSans}>
-                A little perspective, a few stars, and a whole lot of room energy.
-              </div>
+            <div className="pointer-events-none flex items-end justify-center pb-4 md:pb-6">
+              <div className="h-[2px] w-24 rounded-full bg-white/28" />
             </div>
           </div>
         </div>
@@ -789,14 +763,20 @@ function LandingExperience({ onEnter }) {
             <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.24)] px-4 py-2 backdrop-blur">
               <BrandWordmark className="text-[0.95rem]" />
             </div>
-            <div className="mt-8 text-4xl leading-[0.92] text-[#fadb4e] md:text-6xl" style={showDisplay}>YOUR SEAT IS HERE.</div>
+            <div className="mt-8 text-4xl leading-[0.92] text-[#fadb4e] md:text-6xl" style={showDisplay}>WELCOME TO HOUSE GUEST GAMES.</div>
             <p className="mt-5 text-[15px] leading-8 text-white/88 md:text-[17px]" style={cleanSans}>
-              Pull up to the house, settle in, and make yourself at home. The games live right here in the House Guest world, with your seat already waiting.
+              A way for neighbors to play the games from House Guest and feel part of the experience.
+            </p>
+            <p className="mt-4 max-w-2xl text-[15px] leading-8 text-white/82 md:text-[17px]" style={cleanSans}>
+              Pull up, pick a game, and experience the fun of being a neighbor — no invite required.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <button onClick={onEnter} className="rounded-full bg-[#fadb4e] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_18px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
-                head to the tv room
+                enter the tv room
               </button>
+              <div className="rounded-full border border-white/16 bg-white/10 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/86 backdrop-blur" style={cleanSans}>
+                games from the house · made for the neighbors
+              </div>
             </div>
           </div>
         </div>
