@@ -49,9 +49,10 @@ const houseGuestAssets = {
   backyardTree: assetPath("backyard tree.png"),
   emptySeat: assetPath("Empty guest seat.png"),
   guestDoor: assetPath("scott.png"),
+  scottPortrait: assetPath("scott.jpeg"),
   guestRaincoat: assetPath("scott raincoat.webp"),
   guestGrill: assetPath("scottearlgrill.webp"),
-  brandLockup: assetPath("house-guest-lockup.png"),
+  brandLockup: assetPath("house-guest-lockup-removebg-preview.png"),
 };
 
 const guestMoments = [
@@ -751,35 +752,48 @@ function LandingExperience({ onEnter }) {
 
       <section className={`relative min-h-[88vh] overflow-hidden rounded-[3rem] bg-[#edf3f6] shadow-[0_32px_100px_rgba(33,53,71,0.10)] transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${introDismissed ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}>
         <img src={houseGuestAssets.emptySeat} alt="An open seat at the House Guest table" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,18,28,0.64)_0%,rgba(9,18,28,0.36)_36%,rgba(9,18,28,0.18)_62%,rgba(9,18,28,0.38)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.02)_38%,rgba(10,24,35,0.24)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,16,24,0.76)_0%,rgba(7,16,24,0.58)_26%,rgba(7,16,24,0.22)_56%,rgba(7,16,24,0.10)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.02)_0%,rgba(255,255,255,0.01)_34%,rgba(7,16,24,0.16)_100%)]" />
 
-        <div className="relative z-10 grid min-h-[88vh] items-end gap-8 px-6 py-8 md:px-10 md:py-10 lg:grid-cols-[0.44fr,0.56fr]">
-          <div className="flex items-end justify-center lg:justify-start">
-            <img src={houseGuestAssets.guestDoor} alt="Scott Evans welcoming the neighbor in" className="max-h-[34rem] w-auto object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.18)]" />
-          </div>
+        <div className="relative z-10 flex min-h-[88vh] items-start px-6 py-8 md:px-10 md:py-10">
+          <div className="max-w-4xl pt-2 md:pt-6">
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
+                <div className="relative shrink-0">
+                  <div className="absolute -inset-4 rounded-full bg-[#fadb4e]/18 blur-2xl" />
+                  <div className="relative h-24 w-24 overflow-hidden rounded-full ring-[4px] ring-[#fadb4e] shadow-[0_20px_40px_rgba(0,0,0,0.22)] sm:h-28 sm:w-28 md:h-32 md:w-32">
+                    <img src={houseGuestAssets.scottPortrait} alt="Scott Evans welcoming the neighbor in" className="h-full w-full object-cover" />
+                  </div>
+                </div>
 
-          <div className="max-w-2xl text-white lg:pb-4">
-            <div className="inline-flex items-center rounded-full border border-[#111111]/10 bg-[#fadb4e] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#111111] shadow-[0_12px_24px_rgba(0,0,0,0.08)]" style={cleanSans}>
-              House Guest Games
-            </div>
-            <div className="mt-6 inline-flex flex-col rounded-[2rem] bg-[rgba(9,18,28,0.82)] px-6 py-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)] backdrop-blur">
-              <div className="text-[#fadb4e] text-4xl leading-[0.88] md:text-6xl" style={showDisplay}>HEY</div>
-              <div className="text-[#fadb4e] text-4xl leading-[0.88] md:text-6xl" style={showDisplay}>NEIGHBOR!</div>
-            </div>
-            <div className="mt-8 text-4xl leading-[0.92] text-[#fadb4e] md:text-6xl" style={showDisplay}>WELCOME TO HOUSE GUEST GAMES.</div>
-            <p className="mt-5 text-[15px] leading-8 text-white/88 md:text-[17px]" style={cleanSans}>
-              A way for neighbors to play the games from House Guest and feel part of the experience.
-            </p>
-            <p className="mt-4 max-w-2xl text-[15px] leading-8 text-white/82 md:text-[17px]" style={cleanSans}>
-              Pull up, pick a game, and experience the fun of being a neighbor — no invite required.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <button onClick={onEnter} className="rounded-full bg-[#fadb4e] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_18px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
-                enter the tv room
-              </button>
-              <div className="rounded-full border border-white/16 bg-white/10 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/86 backdrop-blur" style={cleanSans}>
-                games from the house · made for the neighbors
+                <div className="inline-flex rounded-full bg-[#fadb4e] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.28em] text-[#111111] shadow-[0_12px_24px_rgba(0,0,0,0.10)]" style={cleanSans}>
+                  Hey neighbor!
+                </div>
+              </div>
+
+              <div className="max-w-2xl">
+                <div className="inline-block rounded-[1.75rem] bg-[#09131d]/90 p-4 shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur md:p-5">
+                  <BrandWordmark className="h-16 w-auto md:h-24" />
+                  <div className="mt-2 pl-1 text-xl text-white md:text-2xl" style={{ ...gamesDisplay, letterSpacing: "0.08em" }}>
+                    Games
+                  </div>
+                </div>
+
+                <div className="mt-7 text-4xl leading-[0.94] text-white md:text-6xl" style={roundedDisplay}>
+                  Play the games from House Guest.
+                </div>
+                <p className="mt-4 max-w-2xl text-[15px] leading-8 text-white/84 md:text-[17px]" style={cleanSans}>
+                  Pull up, pick a game, and experience the fun of being a neighbor — no invite required.
+                </p>
+
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <button onClick={onEnter} className="rounded-full bg-[#fadb4e] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_18px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
+                    enter the tv room
+                  </button>
+                  <button onClick={() => document.getElementById("around-the-house")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="rounded-full border border-white/16 bg-white/10 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/86 backdrop-blur transition hover:bg-white/16" style={cleanSans}>
+                    see around the house
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -803,7 +817,7 @@ function GuestReel() {
   const currentGuest = guestMoments[activeGuest];
 
   return (
-    <section className="relative overflow-hidden rounded-[2.8rem] bg-[#eaf1f4] shadow-[0_26px_90px_rgba(33,53,71,0.08)]">
+    <section id="around-the-house" className="relative overflow-hidden rounded-[2.8rem] bg-[#eaf1f4] shadow-[0_26px_90px_rgba(33,53,71,0.08)]">
       <img src={houseGuestAssets.backyardTree} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
       <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-full w-[34%] object-cover opacity-24" />
       <img src={houseGuestAssets.pool} alt="" aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 h-[36%] w-[28%] object-cover opacity-16" />
