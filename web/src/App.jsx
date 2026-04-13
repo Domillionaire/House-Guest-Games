@@ -726,7 +726,6 @@ function LandingExperience({ onEnter }) {
             ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
             src={houseGuestAssets.heroVideo}
-            poster={houseGuestAssets.arrivalFallback}
             autoPlay
             muted
             playsInline
@@ -752,16 +751,21 @@ function LandingExperience({ onEnter }) {
 
       <section className={`relative min-h-[88vh] overflow-hidden rounded-[3rem] bg-[#edf3f6] shadow-[0_32px_100px_rgba(33,53,71,0.10)] transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${introDismissed ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}>
         <img src={houseGuestAssets.emptySeat} alt="An open seat at the House Guest table" className="absolute inset-0 h-full w-full object-cover" />
-        <img src={houseGuestAssets.backyardTree} alt="" aria-hidden="true" className="pointer-events-none absolute left-0 top-0 h-full w-[28%] object-cover opacity-24 mix-blend-normal" />
-        <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-[42%] w-[24%] object-cover opacity-18 mix-blend-normal" />
-        <img src={houseGuestAssets.pool} alt="" aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 h-[32%] w-[26%] object-cover opacity-16 mix-blend-normal" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,22,33,0.18)_0%,rgba(10,22,33,0.08)_30%,rgba(10,22,33,0.46)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(157,204,226,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.03)_38%,rgba(10,24,35,0.34)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,18,28,0.64)_0%,rgba(9,18,28,0.36)_36%,rgba(9,18,28,0.18)_62%,rgba(9,18,28,0.38)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.02)_38%,rgba(10,24,35,0.24)_100%)]" />
 
-        <div className="relative z-10 flex min-h-[88vh] items-end px-6 py-8 md:px-10 md:py-10">
-          <div className="max-w-xl text-white">
-            <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.24)] px-4 py-2 backdrop-blur">
-              <BrandWordmark className="text-[0.95rem]" />
+        <div className="relative z-10 grid min-h-[88vh] items-end gap-8 px-6 py-8 md:px-10 md:py-10 lg:grid-cols-[0.44fr,0.56fr]">
+          <div className="flex items-end justify-center lg:justify-start">
+            <img src={houseGuestAssets.guestDoor} alt="Scott Evans welcoming the neighbor in" className="max-h-[34rem] w-auto object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.18)]" />
+          </div>
+
+          <div className="max-w-2xl text-white lg:pb-4">
+            <div className="inline-flex items-center rounded-full border border-[#111111]/10 bg-[#fadb4e] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#111111] shadow-[0_12px_24px_rgba(0,0,0,0.08)]" style={cleanSans}>
+              House Guest Games
+            </div>
+            <div className="mt-6 inline-flex flex-col rounded-[2rem] bg-[rgba(9,18,28,0.82)] px-6 py-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)] backdrop-blur">
+              <div className="text-[#fadb4e] text-4xl leading-[0.88] md:text-6xl" style={showDisplay}>HEY</div>
+              <div className="text-[#fadb4e] text-4xl leading-[0.88] md:text-6xl" style={showDisplay}>NEIGHBOR!</div>
             </div>
             <div className="mt-8 text-4xl leading-[0.92] text-[#fadb4e] md:text-6xl" style={showDisplay}>WELCOME TO HOUSE GUEST GAMES.</div>
             <p className="mt-5 text-[15px] leading-8 text-white/88 md:text-[17px]" style={cleanSans}>
