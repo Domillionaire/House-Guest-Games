@@ -772,14 +772,14 @@ function LandingExperience({ onEnter }) {
               </div>
 
               <div className="max-w-2xl">
-                <div className="inline-block rounded-[1.75rem] bg-[#09131d]/90 p-4 shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur md:p-5">
-                  <BrandWordmark className="h-16 w-auto md:h-24" />
-                  <div className="mt-2 pl-1 text-xl text-white md:text-2xl" style={{ ...gamesDisplay, letterSpacing: "0.08em" }}>
+                <div className="inline-flex flex-col items-start gap-2 md:gap-3">
+                  <BrandWordmark className="h-24 w-auto drop-shadow-[0_10px_24px_rgba(0,0,0,0.18)] md:h-36 lg:h-40" />
+                  <div className="pl-1 text-lg text-white/92 md:text-2xl" style={{ ...gamesDisplay, letterSpacing: "0.08em" }}>
                     Games
                   </div>
                 </div>
 
-                <div className="mt-7 text-4xl leading-[0.94] text-white md:text-6xl" style={roundedDisplay}>
+                <div className="mt-6 text-3xl leading-[0.96] text-white md:text-5xl" style={roundedDisplay}>
                   Play the games from House Guest.
                 </div>
                 <p className="mt-4 max-w-2xl text-[15px] leading-8 text-white/84 md:text-[17px]" style={cleanSans}>
