@@ -773,17 +773,17 @@ function LandingExperience({ onEnter }) {
             </div>
           </div>
 
-          <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center text-center">
-            <img src={houseGuestAssets.brandLockupGamesHorizontal} alt="House Guest Games" className="w-full max-w-[17rem] drop-shadow-[0_12px_28px_rgba(0,0,0,0.18)] sm:max-w-[24rem] md:max-w-[34rem] lg:max-w-[42rem]" />
+          <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center text-center -translate-y-3 md:-translate-y-5">
+            <img src={houseGuestAssets.brandLockupGamesHorizontal} alt="House Guest Games" className="w-full max-w-[22rem] drop-shadow-[0_12px_28px_rgba(0,0,0,0.18)] sm:max-w-[30rem] md:max-w-[44rem] lg:max-w-[54rem]" />
 
-            <div className="mt-8 text-3xl leading-[0.96] text-white md:text-5xl" style={roundedDisplay}>
+            <div className="mt-5 text-3xl leading-[0.96] text-white md:text-[3.25rem]" style={roundedDisplay}>
               Play the games from House Guest.
             </div>
-            <p className="mt-4 max-w-3xl text-[15px] leading-8 text-white/86 md:text-[17px]" style={cleanSans}>
+            <p className="mt-3 max-w-3xl text-[15px] leading-8 text-white/86 md:text-[17px]" style={cleanSans}>
               Pull up, pick a game, and experience the fun of being a neighbor — no invite required.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
               <button onClick={onEnter} className="rounded-full bg-[#fadb4e] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_18px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
                 enter the tv room
               </button>
