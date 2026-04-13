@@ -18,6 +18,51 @@ const cleanSans = {
   fontFamily: '"Inter", system-ui, sans-serif',
 };
 
+const showDisplay = {
+  fontFamily: '"Inter", system-ui, sans-serif',
+  fontWeight: 800,
+  letterSpacing: "0.08em",
+};
+
+function assetPath(filename) {
+  const baseUrl =
+    typeof import.meta !== "undefined" && import.meta?.env?.BASE_URL
+      ? import.meta.env.BASE_URL
+      : "/";
+
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  return `${normalizedBase}images/houseguest/${encodeURIComponent(filename)}`;
+}
+
+const houseGuestAssets = {
+  heroVideo: assetPath("House Guest intro vid.mp4"),
+  arrivalFallback: assetPath("scott front door.png"),
+  tvRoom: assetPath("Screenshot 2026-04-11 194025.png"),
+  pool: assetPath("Pool Shot.png"),
+  greenery: assetPath("Greenery Shot.png"),
+  guestDoor: assetPath("scott.png"),
+  guestRaincoat: assetPath("scott raincoat.webp"),
+  guestGrill: assetPath("scottearlgrill.webp"),
+};
+
+const guestMoments = [
+  {
+    src: houseGuestAssets.guestDoor,
+    title: "Pulling up",
+    note: "The knock at the door, the welcome, and the start of the whole vibe.",
+  },
+  {
+    src: houseGuestAssets.guestRaincoat,
+    title: "Come through",
+    note: "Style, presence, and the kind of guest who changes the room the second they walk in.",
+  },
+  {
+    src: houseGuestAssets.guestGrill,
+    title: "Good company",
+    note: "Food, laughs, games, and the next neighbor waiting to pull up.",
+  },
+];
+
 const slides = [
   {
     kind: "scene",
@@ -575,56 +620,164 @@ function HeroReveal() {
 }
 
 function LandingExperience({ onEnter }) {
-  const twinkles = Array.from({ length: 14 }, (_, i) => i);
+  const environmentPlates = [
+    { src: houseGuestAssets.pool, label: "good weather" },
+    { src: houseGuestAssets.greenery, label: "around the house" },
+  ];
 
   return (
-    <div className="relative overflow-hidden rounded-[2.6rem] border border-[#3c3428]/10 bg-[linear-gradient(180deg,#f8f4ed_0%,#efe6d8_100%)] px-6 py-8 shadow-[0_30px_100px_rgba(60,52,40,0.14)] md:px-10 md:py-12">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.92),transparent_26%),radial-gradient(circle_at_left,rgba(111,126,54,0.12),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(201,171,73,0.14),transparent_30%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-5 flex justify-center gap-2">
-        {twinkles.map((item) => (
-          <span key={item} className={`h-2.5 w-2.5 rounded-full ${item % 3 === 0 ? "bg-[#6f7e36]" : item % 2 === 0 ? "bg-[#c9ab49]" : "bg-white"} opacity-80 shadow-[0_0_18px_rgba(201,171,73,0.4)] animate-pulse`} style={{ animationDelay: `${item * 120}ms` }} />
-        ))}
-      </div>
+    <div className="relative overflow-hidden rounded-[2.6rem] border border-[#c8d4dd] bg-[linear-gradient(180deg,#f9f7f1_0%,#f2f6f8_48%,#eef4f6_100%)] px-6 py-8 shadow-[0_30px_100px_rgba(60,52,40,0.10)] md:px-10 md:py-12">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.92),transparent_24%),radial-gradient(circle_at_left,rgba(250,216,78,0.14),transparent_30%),radial-gradient(circle_at_right,rgba(98,160,202,0.12),transparent_32%)]" />
 
-      <div className="relative grid items-center gap-8 lg:grid-cols-[0.9fr,1.1fr]">
-        <div className="text-center lg:text-left">
-          <div className="inline-flex rounded-full border border-[#3c3428]/10 bg-white/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.34em] text-[#6f7e36]" style={cleanSans}>
-            House Guest Games
+      <div className="relative grid items-start gap-8 xl:grid-cols-[0.84fr,1.16fr]">
+        <div className="flex h-full flex-col justify-between">
+          <div>
+            <div className="inline-flex rounded-full border border-[#1f3f58]/10 bg-[#fadb4e] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#203d57]" style={cleanSans}>
+              Hey neighbor!
+            </div>
+            <div className="mt-5 text-[#173149]">
+              <div className="text-5xl leading-[0.9] md:text-7xl xl:text-8xl" style={showDisplay}>HOUSE</div>
+              <div className="text-5xl leading-[0.9] md:text-7xl xl:text-8xl" style={showDisplay}>GUEST</div>
+            </div>
+            <p className="mt-5 max-w-xl text-[15px] leading-7 text-[#4f5c66] md:text-[17px]" style={cleanSans}>
+              Pull up to the house. The TV room is loaded, the guests are coming through, and Five to Flip is ready on screen.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <button onClick={onEnter} className="rounded-full bg-[#173149] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#f7f4ec] shadow-[0_18px_30px_rgba(23,49,73,0.18)] transition hover:-translate-y-0.5 hover:bg-[#12273a]" style={cleanSans}>
+                come through
+              </button>
+              <div className="rounded-full border border-[#173149]/10 bg-white/80 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#5f6c75]" style={cleanSans}>
+                food · drinks · games
+              </div>
+            </div>
           </div>
-          <h1 className="mt-5 text-6xl leading-[0.9] text-[#2d241d] md:text-8xl" style={roundedDisplay}>
-            You’re invited in.
-          </h1>
-          <p className="mt-5 max-w-xl text-[15px] leading-7 text-[#5d5247] md:text-[17px]" style={cleanSans}>
-            A hosted game night built from the House Guest world — warm lighting, intentional details, and a room full of games waiting on the screen.
-          </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-start">
-            <button onClick={onEnter} className="rounded-full bg-[#2d241d] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#f7f2e9] shadow-[0_18px_30px_rgba(45,36,29,0.18)] transition hover:-translate-y-0.5 hover:bg-[#1f1813]" style={cleanSans}>
-              step inside
-            </button>
-            <div className="rounded-full border border-[#3c3428]/10 bg-white/75 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6a5d4e]" style={cleanSans}>
-              hosted · social · editorial
+
+          <div className="mt-8 overflow-hidden rounded-[1.8rem] border border-[#d7e0e6] bg-white/78 p-3 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
+            <div className="grid gap-3 md:grid-cols-[0.9fr,1.1fr]">
+              <div className="relative overflow-hidden rounded-[1.3rem]">
+                <img src={houseGuestAssets.arrivalFallback} alt="Arrival at the front door" className="h-full min-h-[220px] w-full object-cover" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_20%,rgba(17,27,35,0.62)_100%)]" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/75" style={cleanSans}>pull up</div>
+                  <div className="mt-2 text-2xl leading-none uppercase text-[#fadb4e]" style={showDisplay}>AT THE DOOR</div>
+                </div>
+              </div>
+              <div className="rounded-[1.3rem] border border-[#d7e0e6] bg-[#f7f8f6] p-4">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#173149]" style={cleanSans}>house note</div>
+                <p className="mt-3 text-sm leading-7 text-[#4f5c66]" style={cleanSans}>
+                  Good company pulls up, steps inside, grabs a drink, and heads for the room. The site should feel like that before the game even starts.
+                </p>
+                <div className="mt-4 rounded-full border border-[#173149]/10 bg-white px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#5f6c75]" style={cleanSans}>
+                  the intro sets the whole tone
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-4xl">
-          <div className="absolute left-[4%] top-[12%] h-[32%] w-[14%] rounded-[999px] bg-[#5f7a3a]/12 blur-2xl" />
-          <div className="absolute right-[2%] top-[10%] h-[36%] w-[18%] rounded-[999px] bg-[#c9ab49]/15 blur-2xl" />
-          <div className="overflow-hidden rounded-[2.2rem] border border-[#3c3428]/10 bg-white/60 p-3 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[1.7rem] border border-[#3c3428]/10 bg-[linear-gradient(180deg,#efeee6_0%,#e3e1d7_100%)]">
-              <div className="absolute inset-x-0 bottom-0 h-[28%] bg-[linear-gradient(180deg,#d7d4c8_0%,#cbc6ba_100%)]" />
-              <div className="absolute left-[3%] top-[20%] h-[62%] w-[20%] rounded-[2rem] bg-[linear-gradient(180deg,#5b6b38_0%,#30421f_100%)] shadow-[0_18px_40px_rgba(48,66,31,0.18)]" />
-              <div className="absolute left-[78%] top-[16%] h-[62%] w-[8%] rounded-[999px] bg-[linear-gradient(180deg,#5b6b38_0%,#30421f_100%)] shadow-[0_18px_40px_rgba(48,66,31,0.18)]" />
-              <div className="absolute left-[85%] top-[11%] h-[70%] w-[5%] rounded-[999px] bg-[linear-gradient(180deg,#d2c28f_0%,#b8a25e_100%)] opacity-65" />
-              <div className="absolute left-1/2 top-[14%] h-[54%] w-[35%] -translate-x-1/2 rounded-[1.2rem] border border-[#d1cdc3] bg-[linear-gradient(180deg,#2d2d2d_0%,#101010_100%)] shadow-[0_22px_40px_rgba(0,0,0,0.15)]" />
-              <div className="absolute left-1/2 top-[16%] h-[50%] w-[31.5%] -translate-x-1/2 rounded-[0.85rem] border border-[#232323] bg-[linear-gradient(180deg,#151515_0%,#080808_100%)]" />
-              <div className="absolute left-1/2 top-[68%] h-[13%] w-[38%] -translate-x-1/2 rounded-[1rem] bg-[linear-gradient(180deg,#9b7651_0%,#7d5b3c_100%)] shadow-[0_16px_20px_rgba(91,65,43,0.18)]" />
-              <div className="absolute left-1/2 top-[36%] -translate-x-1/2 text-center">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.35em] text-white/55" style={cleanSans}>welcome</div>
-                <div className="mt-3 text-4xl leading-none text-white md:text-5xl" style={roundedDisplay}>House Guest</div>
-                <div className="mt-2 text-sm text-white/75" style={cleanSans}>games for the room</div>
+        <div className="space-y-4">
+          <div className="overflow-hidden rounded-[2.2rem] border border-[#d7e0e6] bg-white/68 p-3 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-[1.7rem] bg-[#171310]">
+              <video
+                className="h-full w-full object-cover"
+                src={houseGuestAssets.heroVideo}
+                poster={houseGuestAssets.arrivalFallback}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.18)_38%,rgba(12,22,31,0.70)_100%)]" />
+              <div className="absolute left-5 top-5 rounded-full border border-white/15 bg-[#fadb4e]/90 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#173149] shadow-[0_10px_20px_rgba(0,0,0,0.08)]" style={cleanSans}>
+                come through
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white md:p-8">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-white/70" style={cleanSans}>House Guest intro</div>
+                <div className="mt-3 text-4xl leading-none uppercase text-[#fadb4e] md:text-5xl" style={showDisplay}>PULL UP TO THE HOUSE</div>
+                <p className="mt-3 max-w-lg text-sm leading-6 text-white/82" style={cleanSans}>
+                  Let the real intro welcome people in before they ever touch the TV room lineup.
+                </p>
               </div>
             </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {environmentPlates.map((plate) => (
+              <div key={plate.label} className="overflow-hidden rounded-[1.6rem] border border-[#d7e0e6] bg-white/74 p-3 shadow-[0_16px_40px_rgba(60,52,40,0.08)] backdrop-blur">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.2rem]">
+                  <img src={plate.src} alt={plate.label} className="h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_35%,rgba(19,31,41,0.62)_100%)]" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/75" style={cleanSans}>house detail</div>
+                    <div className="mt-2 text-2xl leading-none uppercase text-[#fadb4e]" style={showDisplay}>{plate.label}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GuestReel() {
+  const [activeGuest, setActiveGuest] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveGuest((prev) => (prev + 1) % guestMoments.length);
+    }, 3200);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const currentGuest = guestMoments[activeGuest];
+
+  return (
+    <div className="rounded-[2.2rem] border border-[#d3dee4] bg-[linear-gradient(180deg,#f9f7f1_0%,#f3f7f9_100%)] p-4 shadow-[0_24px_80px_rgba(60,52,40,0.10)] md:p-5">
+      <div className="grid gap-4 xl:grid-cols-[1.08fr,0.92fr]">
+        <div className="overflow-hidden rounded-[1.8rem] border border-[#d7e0e6] bg-white/72 p-3 shadow-[0_16px_40px_rgba(60,52,40,0.08)] backdrop-blur">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-[1.4rem] bg-[#1a1410]">
+            <img src={currentGuest.src} alt={currentGuest.title} className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05)_0%,rgba(0,0,0,0.20)_42%,rgba(18,28,37,0.76)_100%)]" />
+            <div className="absolute left-5 top-5 rounded-full border border-white/15 bg-[#fadb4e]/90 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-[#173149] shadow-[0_10px_20px_rgba(0,0,0,0.08)]" style={cleanSans}>
+              guest list
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-5 text-white md:p-7">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-white/72" style={cleanSans}>currently showing</div>
+              <div className="mt-3 text-4xl leading-none uppercase text-[#fadb4e] md:text-5xl" style={showDisplay}>{currentGuest.title}</div>
+              <p className="mt-3 max-w-lg text-sm leading-6 text-white/82" style={cleanSans}>{currentGuest.note}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-between rounded-[1.8rem] border border-[#d7e0e6] bg-white/72 p-5 shadow-[0_16px_40px_rgba(60,52,40,0.08)] backdrop-blur">
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#173149]" style={cleanSans}>the guest list</div>
+            <h2 className="mt-3 text-4xl leading-[0.94] uppercase text-[#173149]" style={showDisplay}>WHO’S PULLING UP?</h2>
+            <p className="mt-4 text-sm leading-7 text-[#4f5c66]" style={cleanSans}>
+              Good company, good conversation, and one more seat for the next neighbor. Let the reel feel like people coming through the house, not a product carousel.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3">
+            {guestMoments.map((guest, index) => (
+              <button
+                key={guest.title}
+                onClick={() => setActiveGuest(index)}
+                className={`grid grid-cols-[88px,1fr] gap-3 overflow-hidden rounded-[1.2rem] border text-left transition ${
+                  index === activeGuest ? "border-[#173149] bg-[#eef4f7] shadow-[0_10px_20px_rgba(23,49,73,0.08)]" : "border-[#d7e0e6] bg-[#fbfcfa] hover:bg-[#f3f7f9]"
+                }`}
+              >
+                <img src={guest.src} alt={guest.title} className="h-full w-full object-cover" />
+                <div className="py-4 pr-4">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#173149]" style={cleanSans}>guest moment</div>
+                  <div className="mt-2 text-2xl leading-none uppercase text-[#173149]" style={showDisplay}>{guest.title}</div>
+                  <div className="mt-2 text-xs leading-6 text-[#4f5c66]" style={cleanSans}>{guest.note}</div>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -636,51 +789,82 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onOpenGame }) {
   const game = gameLibrary[selectedIndex];
 
   return (
-    <div className="rounded-[2.4rem] border border-[#3c3428]/10 bg-[linear-gradient(180deg,#f8f4ed_0%,#efe6d8_100%)] p-4 shadow-[0_30px_100px_rgba(60,52,40,0.14)]">
+    <div className="rounded-[2.4rem] border border-[#d3dee4] bg-[linear-gradient(180deg,#f9f7f1_0%,#f3f7f9_100%)] p-4 shadow-[0_30px_100px_rgba(60,52,40,0.10)] md:p-5">
       <div className="mb-5 flex items-start justify-between gap-4 px-2 pt-2">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#6f7e36]" style={cleanSans}>the tv room</div>
-          <h2 className="mt-2 text-4xl leading-none text-[#2d241d] md:text-5xl" style={roundedDisplay}>Choose tonight’s game.</h2>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#173149]" style={cleanSans}>the tv room</div>
+          <h2 className="mt-2 text-4xl leading-none uppercase text-[#173149] md:text-5xl" style={showDisplay}>WHAT’S ON SCREEN?</h2>
         </div>
-        <div className="rounded-full border border-[#3c3428]/10 bg-white/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6a5d4e]" style={cleanSans}>swipe the screen</div>
+        <div className="rounded-full border border-[#173149]/10 bg-[#fadb4e] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#173149]" style={cleanSans}>now playing</div>
       </div>
 
-      <div className="relative overflow-hidden rounded-[2rem] border border-[#3c3428]/10 bg-[linear-gradient(180deg,#dfe7e4_0%,#d3ddd9_100%)] p-4">
-        <div className="absolute left-[2%] top-[18%] h-[58%] w-[11%] rounded-[1.6rem] bg-[linear-gradient(180deg,#24334f_0%,#10192c_100%)] opacity-90" />
-        <div className="absolute right-[3%] top-[10%] h-[68%] w-[7%] rounded-[999px] bg-[linear-gradient(180deg,#52724a_0%,#2f4a29_100%)] shadow-[0_20px_30px_rgba(47,74,41,0.15)]" />
-        <div className="absolute bottom-[7%] left-1/2 h-[12%] w-[54%] -translate-x-1/2 rounded-[1.2rem] bg-[linear-gradient(180deg,#a57a56_0%,#7c593e_100%)] shadow-[0_18px_24px_rgba(89,61,42,0.16)]" />
-        <div className="absolute left-1/2 top-[11%] h-[58%] w-[56%] -translate-x-1/2 rounded-[1.35rem] border-[10px] border-[#22231f] bg-black shadow-[0_24px_40px_rgba(0,0,0,0.16)]">
-          <div className="relative h-full w-full overflow-hidden rounded-[0.7rem] bg-[linear-gradient(180deg,#1d1b18_0%,#090909_100%)] p-5">
-            <div className={`absolute inset-0 bg-gradient-to-br ${game.accent} opacity-75`} />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_22%),linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.28)_100%)]" />
-            <div className="relative flex h-full flex-col justify-between text-white">
-              <div>
-                <div className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/85" style={cleanSans}>{game.eyebrow}</div>
-                <div className="mt-4 text-4xl leading-none md:text-5xl" style={roundedDisplay}>{game.title}</div>
-                <p className="mt-4 max-w-md text-sm leading-6 text-white/82" style={cleanSans}>{game.blurb}</p>
-              </div>
-              <div className="flex items-end justify-between gap-4">
-                <div className="rounded-full border border-white/15 bg-black/20 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/78" style={cleanSans}>{game.status}</div>
-                <button onClick={() => onOpenGame(game)} className="rounded-full bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#1f1813] shadow-[0_12px_20px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5" style={cleanSans}>
-                  {game.id === "five-to-flip" ? "launch game" : "view room"}
-                </button>
+      <div className="grid gap-4 xl:grid-cols-[1.15fr,0.85fr]">
+        <div className="overflow-hidden rounded-[1.9rem] border border-[#d7e0e6] bg-white/78 p-3 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-[1.5rem] bg-[#171310]">
+            <img src={houseGuestAssets.tvRoom} alt="House Guest TV room" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.06)_0%,rgba(0,0,0,0.12)_24%,rgba(18,28,37,0.62)_100%)]" />
+
+            <button onClick={onPrev} className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/25 text-xl text-white shadow-[0_10px_20px_rgba(0,0,0,0.18)] backdrop-blur transition hover:scale-105">‹</button>
+            <button onClick={onNext} className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/25 text-xl text-white shadow-[0_10px_20px_rgba(0,0,0,0.18)] backdrop-blur transition hover:scale-105">›</button>
+
+            <div className="absolute bottom-0 left-0 right-0 p-5 md:p-7">
+              <div className="max-w-xl rounded-[1.6rem] border border-white/12 bg-[rgba(18,28,37,0.70)] p-5 text-white shadow-[0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur">
+                <div className="inline-flex rounded-full border border-white/15 bg-[#fadb4e]/92 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#173149]" style={cleanSans}>
+                  {game.eyebrow}
+                </div>
+                <div className="mt-4 text-4xl leading-none uppercase text-[#fadb4e] md:text-5xl" style={showDisplay}>{game.title}</div>
+                <p className="mt-4 max-w-md text-sm leading-6 text-white/84" style={cleanSans}>{game.blurb}</p>
+                <div className="mt-5 flex flex-wrap items-center gap-3">
+                  <div className="rounded-full border border-white/15 bg-black/20 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/78" style={cleanSans}>{game.status}</div>
+                  <button onClick={() => onOpenGame(game)} className="rounded-full bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_12px_20px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5" style={cleanSans}>
+                    {game.id === "five-to-flip" ? "play now" : "view room"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+
+          <div className="flex items-center justify-center gap-3 px-2 pb-1 pt-4">
+            {gameLibrary.map((item, index) => (
+              <button
+                key={item.id}
+                onClick={() => onOpenGame(item, true)}
+                className={`h-2.5 rounded-full transition ${index === selectedIndex ? "w-12 bg-[#173149]" : "w-3 bg-[#173149]/20 hover:bg-[#173149]/35"}`}
+                aria-label={`Go to ${item.title}`}
+              />
+            ))}
+          </div>
         </div>
 
-        <button onClick={onPrev} className="absolute left-[16%] top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#3c3428]/10 bg-white/85 text-xl text-[#2d241d] shadow-[0_10px_20px_rgba(60,52,40,0.12)] transition hover:scale-105">‹</button>
-        <button onClick={onNext} className="absolute right-[16%] top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#3c3428]/10 bg-white/85 text-xl text-[#2d241d] shadow-[0_10px_20px_rgba(60,52,40,0.12)] transition hover:scale-105">›</button>
+        <div className="grid gap-4">
+          <div className="overflow-hidden rounded-[1.8rem] border border-[#d7e0e6] bg-white/78 p-3 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem]">
+              <img src={houseGuestAssets.pool} alt="Pool area environment" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_35%,rgba(18,28,37,0.60)_100%)]" />
+              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/72" style={cleanSans}>around the house</div>
+                <div className="mt-2 text-3xl leading-none uppercase text-[#fadb4e]" style={showDisplay}>GOOD WEATHER</div>
+              </div>
+            </div>
+          </div>
 
-        <div className="relative mt-[65%] flex items-center justify-center gap-3 pb-2 pt-4 md:mt-[56%]">
-          {gameLibrary.map((item, index) => (
-            <button
-              key={item.id}
-              onClick={() => onOpenGame(item, true)}
-              className={`h-2.5 rounded-full transition ${index === selectedIndex ? "w-12 bg-[#2d241d]" : "w-3 bg-[#2d241d]/20 hover:bg-[#2d241d]/35"}`}
-              aria-label={`Go to ${item.title}`}
-            />
-          ))}
+          <div className="overflow-hidden rounded-[1.8rem] border border-[#d7e0e6] bg-white/78 p-3 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem]">
+              <img src={houseGuestAssets.greenery} alt="Greenery environment" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_35%,rgba(18,28,37,0.60)_100%)]" />
+              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/72" style={cleanSans}>around the house</div>
+                <div className="mt-2 text-3xl leading-none uppercase text-[#fadb4e]" style={showDisplay}>GREEN ROOM</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.8rem] border border-[#d7e0e6] bg-white/78 p-5 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#173149]" style={cleanSans}>room note</div>
+            <p className="mt-3 text-sm leading-7 text-[#4f5c66]" style={cleanSans}>
+              Slide the lineup, grab a seat, and pick what’s on screen. The room should feel like the show is already in motion.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -895,17 +1079,22 @@ export default function FiveToFlipPrototype() {
         <div className="pointer-events-none absolute -top-16 left-1/2 h-[24rem] w-[64rem] -translate-x-1/2 rounded-full bg-white/45 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
-          {view === "arrival" ? <div className="mb-8"><LandingExperience onEnter={() => setView("library")} /></div> : null}
+          {view === "arrival" ? (
+            <div className="mb-8 space-y-6">
+              <LandingExperience onEnter={() => setView("library")} />
+              <GuestReel />
+            </div>
+          ) : null}
 
           {view === "library" ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between rounded-[1.8rem] border border-[#3c3428]/10 bg-white/70 px-5 py-4 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
                 <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#6f7e36]" style={cleanSans}>House Guest Games</div>
-                  <div className="mt-1 text-3xl leading-none text-[#2d241d]" style={roundedDisplay}>the tv room</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#173149]" style={cleanSans}>Hey neighbor!</div>
+                  <div className="mt-1 text-3xl leading-none uppercase text-[#173149]" style={showDisplay}>TV ROOM</div>
                 </div>
                 <button onClick={() => setView("arrival")} className="rounded-full border border-[#3c3428]/10 bg-[#f7f2e9] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#2d241d] transition hover:bg-white" style={cleanSans}>
-                  back to door
+                  back outside
                 </button>
               </div>
 
