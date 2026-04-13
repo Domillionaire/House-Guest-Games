@@ -54,7 +54,7 @@ const houseGuestAssets = {
   guestGrill: assetPath("scottearlgrill.webp"),
   brandLockup: assetPath("house-guest-lockup-removebg-preview.png"),
   brandLockupHorizontal: assetPath("House Guest hori.png"),
-  brandLockupGamesHorizontal: assetPath("House Guest games hori.png"),
+  brandLockupGamesHorizontal: assetPath("House Guest games less blank space.png"),
 };
 
 const guestMoments = [
