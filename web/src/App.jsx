@@ -845,7 +845,7 @@ function GamesBridgeSection({ onEnter }) {
     <section className="relative overflow-hidden rounded-[2.8rem] bg-[#0d1d2a] shadow-[0_26px_90px_rgba(33,53,71,0.10)]">
       <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,20,30,0.94)_0%,rgba(8,20,30,0.84)_34%,rgba(8,20,30,0.76)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(157,204,226,0.08),transpa
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(157,204,226,0.08),transparent_26%)]" />
 
       <div className="relative z-10 grid gap-8 px-6 py-8 md:px-8 md:py-10 lg:grid-cols-[0.92fr,1.08fr] lg:items-center">
         <div className="max-w-2xl text-white">
