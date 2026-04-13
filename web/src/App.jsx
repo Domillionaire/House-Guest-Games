@@ -502,7 +502,7 @@ function RevealPanel({ rows, cols, revealed, aspectClass = "aspect-[4/3]", cover
   );
 }
 
-function HeroReveal() {
+function HeroReveal({ fill = false }) {
   const rows = 3;
   const cols = 4;
   const total = rows * cols;
@@ -601,10 +601,22 @@ function HeroReveal() {
   const activeSet = new Set(finalReveal ? Array.from({ length: total }, (_, i) => i) : openTiles);
 
   return (
-    <div className="relative mx-auto max-w-4xl">
-      <div className={`absolute -inset-4 rounded-[2rem] transition-all duration-700 ${fanfare ? "bg-white/35 blur-xl" : "bg-transparent"}`} />
-      <div className="relative overflow-hidden rounded-[1.8rem] border-4 border-[#2D2442] bg-white p-3 shadow-[0_14px_0_#2D2442]">
-        <div className="relative aspect-[16/9] overflow-hidden rounded-[1.35rem] border-2 border-[#2D2442] bg-white">
+    <div className={fill ? "relative h-full w-full overflow-hidden" : "relative mx-auto max-w-4xl"}>
+      <div
+        className={`${fill ? "absolute inset-0 rounded-[1.4rem]" : "absolute -inset-4 rounded-[2rem]"} transition-all duration-700 ${fanfare ? "bg-white/35 blur-xl" : "bg-transparent"}`}
+      />
+      <div
+        className={fill
+          ? "relative h-full w-full overflow-hidden rounded-[1.4rem] bg-transparent"
+          : "relative overflow-hidden rounded-[1.8rem] border-4 border-[#2D2442] bg-white p-3 shadow-[0_14px_0_#2D2442]"
+        }
+      >
+        <div
+          className={fill
+            ? "relative h-full w-full overflow-hidden rounded-[1.4rem] bg-white"
+            : "relative aspect-[16/9] overflow-hidden rounded-[1.35rem] border-2 border-[#2D2442] bg-white"
+          }
+        >
           <div className="absolute inset-0 bg-[linear-gradient(180deg,#E5D268_0%,#F8F1C8_100%)]" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="h-[82%] w-[92%] rounded-[1.2rem] border-2 border-[#2D2442]/20 bg-white/20" />
@@ -670,16 +682,17 @@ function HeroReveal() {
   );
 }
 
-function LandingExperience({ onEnter }) {
+function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }) {
   const videoRef = useRef(null);
   const [introExiting, setIntroExiting] = useState(false);
-  const [introDismissed, setIntroDismissed] = useState(false);
+  const [introDismissed, setIntroDismissed] = useState(introAlreadySeen);
 
   const dismissIntro = () => {
     if (introExiting || introDismissed) return;
     setIntroExiting(true);
     window.setTimeout(() => {
       setIntroDismissed(true);
+      onIntroDismiss?.();
     }, 1100);
   };
 
@@ -688,11 +701,17 @@ function LandingExperience({ onEnter }) {
     setIntroExiting(true);
     window.setTimeout(() => {
       setIntroDismissed(true);
+      onIntroDismiss?.();
       onEnter();
     }, 900);
   };
 
   useEffect(() => {
+    if (introAlreadySeen) {
+      setIntroDismissed(true);
+      return;
+    }
+
     const video = videoRef.current;
     if (!video) return;
 
@@ -780,12 +799,12 @@ function LandingExperience({ onEnter }) {
               Play the games from House Guest.
             </div>
             <p className="mt-3 max-w-3xl text-[15px] leading-8 text-white/86 md:text-[17px]" style={cleanSans}>
-              Pull up, pick a game, and experience the fun of being a neighbor — no invite required.
+              Pull up, pick a game, and experience the fun of being a neighbor.
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
               <button onClick={onEnter} className="rounded-full bg-[#fadb4e] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_18px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
-                enter the tv room
+                enter the game room
               </button>
               <button onClick={() => document.getElementById("around-the-house")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="rounded-full border border-white/16 bg-white/10 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/86 backdrop-blur transition hover:bg-white/16" style={cleanSans}>
                 see around the house
@@ -798,13 +817,128 @@ function LandingExperience({ onEnter }) {
   );
 }
 
-function GuestReel() {
+function GamesBridgeSection({ onEnter }) {
+  const [activeCard, setActiveCard] = useState(0);
+
+  const bridgeCards = [
+    {
+      id: 0,
+      step: "01 · first up",
+      title: "Play Five to Flip",
+      body: "Five questions. One celeb. One hidden image waiting on the screen.",
+    },
+    {
+      id: 1,
+      step: "02 · make your guess",
+      title: "Ask. Narrow it down.",
+      body: "Use up to five questions, read the clues, and decide when it’s time to make the call.",
+    },
+    {
+      id: 2,
+      step: "03 · get the reveal",
+      title: "Flip it and find out.",
+      body: "A right guess earns the reveal. Then the room gets to see who really had it figured out.",
+    },
+  ];
+
+  return (
+    <section className="relative overflow-hidden rounded-[2.8rem] bg-[#0d1d2a] shadow-[0_26px_90px_rgba(33,53,71,0.10)]">
+      <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,20,30,0.94)_0%,rgba(8,20,30,0.84)_34%,rgba(8,20,30,0.76)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(157,204,226,0.08),transpa
+
+      <div className="relative z-10 grid gap-8 px-6 py-8 md:px-8 md:py-10 lg:grid-cols-[0.92fr,1.08fr] lg:items-center">
+        <div className="max-w-2xl text-white">
+          <div className="inline-flex rounded-full border border-white/14 bg-[#fadb4e] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#173149]" style={cleanSans}>
+            from the house
+          </div>
+          <div className="mt-5 text-4xl leading-[0.94] text-[#fadb4e] md:text-5xl" style={showDisplay}>
+            WE ALWAYS INVITE OUR HOUSE GUESTS TO PLAY A GAME.
+          </div>
+          <div className="mt-3 text-3xl leading-[0.98] text-white md:text-4xl" style={roundedDisplay}>
+            Now you can too, Neighbor.
+          </div>
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button
+              onClick={onEnter}
+              className="rounded-full bg-[#fadb4e] px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_14px_26px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:brightness-95"
+              style={cleanSans}
+            >
+              enter the game room
+            </button>
+            <div className="rounded-full border border-white/14 bg-white/10 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/84 backdrop-blur" style={cleanSans}>
+              choose · guess · reveal
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="flex h-[34rem] flex-col gap-4 md:h-[38rem]"
+          onMouseLeave={() => setActiveCard(0)}
+        >
+          {bridgeCards.map((card, index) => {
+            const isActive = activeCard === index;
+
+            return (
+              <button
+                key={card.id}
+                type="button"
+                onMouseEnter={() => setActiveCard(index)}
+                onFocus={() => setActiveCard(index)}
+                onClick={() => setActiveCard(index)}
+                className={`group relative overflow-hidden rounded-[2rem] border border-white/12 bg-[rgba(255,255,255,0.06)] px-5 py-5 text-left shadow-[0_14px_30px_rgba(0,0,0,0.12)] backdrop-blur transition-all duration-300 ease-out hover:border-[#fadb4e]/70 min-h-0 ${
+                  isActive
+                    ? "flex-[2.9] border-[#fadb4e]/60 bg-[rgba(255,255,255,0.09)] shadow-[0_24px_48px_rgba(0,0,0,0.20)]"
+                    : "flex-1 bg-[rgba(255,255,255,0.05)]"
+                }`}
+              >
+                <div className={`absolute inset-0 transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-70"} ${
+                  index === 0
+                    ? "bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.00)_100%)]"
+                    : index === 1
+                      ? "bg-[radial-gradient(circle_at_top_right,rgba(250,219,78,0.10),transparent_30%)]"
+                      : "bg-[radial-gradient(circle_at_bottom_left,rgba(157,204,226,0.10),transparent_30%)]"
+                }`} />
+
+                {index === 0 && isActive ? (
+                  <>
+                    <div className="absolute inset-0">
+                      <HeroReveal fill />
+                    </div>
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,20,30,0.78)_0%,rgba(8,20,30,0.22)_40%,rgba(8,20,30,0.72)_100%)]" />
+                  </>
+                ) : null}
+
+                <div className="relative z-10 flex h-full min-h-0 flex-col justify-between text-white">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/58" style={cleanSans}>{card.step}</div>
+
+                  <div className="mt-4">
+                    <div className={`leading-[0.94] transition-all duration-300 ${isActive ? "text-[#fadb4e]" : "text-white"} ${index === 0 ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl"}`} style={index === 0 ? showDisplay : roundedDisplay}>
+                      {card.title}
+                    </div>
+                    <p className={`mt-3 max-w-xl text-sm leading-7 text-white/78 transition-all duration-300 ${isActive ? "opacity-100" : "opacity-0 max-h-0 overflow-hidden mt-0"}`} style={cleanSans}>
+                      {card.body}
+                    </p>
+                  </div>
+
+                  
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WatchHouseGuestPage() {
   const [activeGuest, setActiveGuest] = useState(0);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
       setActiveGuest((prev) => (prev + 1) % guestMoments.length);
-    }, 4200);
+    }, 3200);
 
     return () => window.clearInterval(interval);
   }, []);
@@ -812,51 +946,47 @@ function GuestReel() {
   const currentGuest = guestMoments[activeGuest];
 
   return (
-    <section id="around-the-house" className="relative overflow-hidden rounded-[2.8rem] bg-[#eaf1f4] shadow-[0_26px_90px_rgba(33,53,71,0.08)]">
-      <img src={houseGuestAssets.backyardTree} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
-      <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-full w-[34%] object-cover opacity-24" />
-      <img src={houseGuestAssets.pool} alt="" aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 h-[36%] w-[28%] object-cover opacity-16" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,20,30,0.78)_0%,rgba(8,20,30,0.52)_42%,rgba(8,20,30,0.34)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.12),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(157,204,226,0.12),transparent_28%)]" />
+    <section className="relative overflow-hidden rounded-[2.5rem] border border-[#d9e3e8] bg-[#eef4f6] shadow-[0_24px_80px_rgba(33,53,71,0.08)]">
+      <img src={currentGuest.src} alt={currentGuest.title} className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,23,34,0.84)_0%,rgba(11,23,34,0.56)_42%,rgba(11,23,34,0.32)_100%)]" />
 
-      <div className="relative z-10 grid min-h-[34rem] gap-8 px-6 py-8 md:px-8 md:py-9 lg:grid-cols-[0.84fr,1.16fr] lg:items-end">
-        <div className="max-w-xl text-white">
-          <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.24)] px-4 py-2 backdrop-blur">
-            <BrandWordmark className="text-[0.95rem]" />
+      <div className="relative z-10 grid min-h-[28rem] gap-6 px-6 py-6 md:px-8 md:py-8 lg:grid-cols-[0.9fr,1.1fr] lg:items-end">
+        <div className="max-w-lg text-white">
+          <div className="inline-flex rounded-full border border-white/14 bg-[#fadb4e] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#173149]" style={cleanSans}>
+            House Guest Games
           </div>
-          <div className="mt-6 text-[10px] font-semibold uppercase tracking-[0.34em] text-white/66" style={cleanSans}>around the house</div>
-          <div className="mt-3 text-4xl leading-[0.94] text-[#fadb4e] md:text-5xl" style={showDisplay}>SEE THE STARS IN A NEW LIGHT</div>
-          <p className="mt-5 text-sm leading-8 text-white/84 md:text-base" style={cleanSans}>
-            Musical guests, good company, and a little perspective. House Guest Games stays inside that same warm, welcoming world — just with something new on screen.
+          <div className="mt-5 text-4xl leading-[0.94] text-[#fadb4e] md:text-5xl" style={showDisplay}>THE GUEST LIST</div>
+          <p className="mt-4 text-sm leading-7 text-white/84 md:text-base" style={cleanSans}>
+            Good company pulls up, shifts the room, and leaves you seeing them a little differently. The site should feel like that too.
           </p>
-          <div className="mt-8">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/60" style={cleanSans}>right now</div>
-            <div className="mt-2 text-3xl leading-none text-white md:text-4xl" style={showDisplay}>{currentGuest.title}</div>
-            <p className="mt-3 max-w-md text-sm leading-7 text-white/80" style={cleanSans}>{currentGuest.note}</p>
-          </div>
+          <div className="mt-6 text-[10px] font-semibold uppercase tracking-[0.32em] text-white/64" style={cleanSans}>now showing</div>
+          <div className="mt-2 text-3xl leading-none text-white md:text-4xl" style={showDisplay}>{currentGuest.title}</div>
+          <p className="mt-3 max-w-md text-sm leading-6 text-white/80" style={cleanSans}>{currentGuest.note}</p>
         </div>
 
-        <div className="flex flex-col items-start gap-4 lg:items-end">
-          <div className="flex flex-wrap gap-3 lg:max-w-3xl lg:justify-end">
+        <div className="flex flex-col gap-3 self-end lg:items-end">
+          <div className="grid w-full gap-3 sm:grid-cols-3 lg:max-w-2xl">
             {guestMoments.map((guest, index) => (
               <button
                 key={guest.title}
                 onClick={() => setActiveGuest(index)}
-                className={`group relative h-44 w-[11rem] overflow-hidden rounded-[1.8rem] transition md:h-52 md:w-[13rem] ${
-                  index === activeGuest ? "ring-2 ring-[#fadb4e] ring-offset-0" : "opacity-88 hover:opacity-100"
+                className={`group relative overflow-hidden rounded-[1.4rem] border text-left transition ${
+                  index === activeGuest
+                    ? "border-[#fadb4e] shadow-[0_12px_30px_rgba(0,0,0,0.16)]"
+                    : "border-white/14 hover:border-white/28"
                 }`}
               >
-                <img src={guest.src} alt={guest.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_20%,rgba(8,20,30,0.84)_100%)]" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-left text-white">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/60" style={cleanSans}>neighbor moment</div>
-                  <div className="mt-2 text-lg leading-none text-[#fadb4e]" style={showDisplay}>{guest.title}</div>
+                <img src={guest.src} alt={guest.title} className="h-36 w-full object-cover transition duration-500 group-hover:scale-[1.02]" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_22%,rgba(11,23,34,0.82)_100%)]" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/64" style={cleanSans}>guest moment</div>
+                  <div className="mt-2 text-xl leading-none text-[#fadb4e]" style={showDisplay}>{guest.title}</div>
                 </div>
               </button>
             ))}
           </div>
-          <div className="rounded-full border border-white/16 bg-white/10 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/84 backdrop-blur" style={cleanSans}>
-            come through and stay a while
+          <div className="rounded-full border border-white/14 bg-white/10 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/84 backdrop-blur" style={cleanSans}>
+            maybe you’re the next neighbor
           </div>
         </div>
       </div>
@@ -868,7 +998,7 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onOpenGame }) {
   const game = gameLibrary[selectedIndex];
 
   return (
-    <section className="relative overflow-hidden rounded-[2.9rem] bg-[#eaf1f4] shadow-[0_30px_100px_rgba(33,53,71,0.08)]">
+    <section id="game-room" className="relative overflow-hidden rounded-[2.9rem] bg-[#eaf1f4] shadow-[0_30px_100px_rgba(33,53,71,0.08)]">
       <img src={houseGuestAssets.tvRoom} alt="House Guest TV room" className="absolute inset-0 h-full w-full object-cover" />
       <img src={houseGuestAssets.backyardTree} alt="" aria-hidden="true" className="pointer-events-none absolute left-0 top-0 h-full w-[20%] object-cover opacity-18" />
       <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute right-0 bottom-0 h-[42%] w-[22%] object-cover opacity-18" />
@@ -881,9 +1011,11 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onOpenGame }) {
             <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.24)] px-4 py-2 backdrop-blur">
               <BrandWordmark className="text-[0.95rem]" />
             </div>
-            <div className="mt-6 text-4xl leading-[0.88] text-[#fadb4e] md:text-5xl" style={showDisplay}>TV ROOM</div>
+            <div className="mt-6 text-4xl leading-[0.88] text-[#fadb4e] md:text-5xl" style={showDisplay}>GAME ROOM</div>
             <p className="mt-3 max-w-lg text-sm leading-7 text-white/82 md:text-base" style={cleanSans}>
-              What’s on screen, neighbor? Pick the game, grab a seat, and let the room do the rest.
+              A good game gets the room talking.
+              <br />
+              A better one gets everybody involved.
             </p>
           </div>
 
@@ -960,10 +1092,42 @@ function MatchFormatCard({ format, resetMatch }) {
   );
 }
 
+function SiteNav({ activePage, onGoGamesHome, onGoWatchHouseGuest, onGoTVRoom }) {
+  const baseClass = "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] transition";
+
+  return (
+    <div className="sticky top-4 z-30 flex justify-end gap-2">
+      <button
+        onClick={onGoGamesHome}
+        className={`${baseClass} ${activePage === "games" ? "bg-[#173149] text-white shadow-[0_10px_24px_rgba(0,0,0,0.10)]" : "border border-[#173149]/12 bg-white/72 text-[#173149] hover:bg-white"}`}
+        style={cleanSans}
+      >
+        House Guest Games
+      </button>
+      <button
+        onClick={onGoWatchHouseGuest}
+        className={`${baseClass} ${activePage === "watch" ? "bg-[#173149] text-white shadow-[0_10px_24px_rgba(0,0,0,0.10)]" : "border border-[#173149]/12 bg-white/72 text-[#173149] hover:bg-white"}`}
+        style={cleanSans}
+      >
+        Watch House Guest
+      </button>
+      <button
+        onClick={onGoTVRoom}
+        className={`${baseClass} bg-[#fadb4e] text-[#173149] shadow-[0_10px_24px_rgba(0,0,0,0.08)] hover:brightness-95`}
+        style={cleanSans}
+      >
+        Enter Game Room
+      </button>
+    </div>
+  );
+}
+
 export default function FiveToFlipPrototype() {
   const [format, setFormat] = useState(3);
   const [view, setView] = useState("arrival");
   const [selectedGameIndex, setSelectedGameIndex] = useState(0);
+  const [arrivalPage, setArrivalPage] = useState("games");
+  const [hasSeenIntro, setHasSeenIntro] = useState(false);
   const [activePlayer, setActivePlayer] = useState("B");
   const [holder, setHolder] = useState("A");
   const [questionsUsed, setQuestionsUsed] = useState(0);
@@ -1148,8 +1312,25 @@ export default function FiveToFlipPrototype() {
         <div className="relative mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
           {view === "arrival" ? (
             <div className="mb-8 space-y-6">
-              <LandingExperience onEnter={() => setView("library")} />
-              <GuestReel />
+              <SiteNav
+                activePage={arrivalPage}
+                onGoGamesHome={() => setArrivalPage("games")}
+                onGoWatchHouseGuest={() => setArrivalPage("watch")}
+                onGoTVRoom={() => setView("library")}
+              />
+
+              {arrivalPage === "games" ? (
+                <div className="space-y-6">
+                  <LandingExperience
+                    onEnter={() => setView("library")}
+                    introAlreadySeen={hasSeenIntro}
+                    onIntroDismiss={() => setHasSeenIntro(true)}
+                  />
+                  <GamesBridgeSection onEnter={() => setView("library")} />
+                </div>
+              ) : (
+                <WatchHouseGuestPage />
+              )}
             </div>
           ) : null}
 
@@ -1158,7 +1339,7 @@ export default function FiveToFlipPrototype() {
               <div className="flex items-center justify-between px-1 py-1">
                 <div>
                   <BrandWordmark dark className="text-[0.95rem]" />
-                  <div className="mt-1 text-3xl leading-none text-[#173149]" style={showDisplay}>TV ROOM</div>
+                  <div className="mt-1 text-3xl leading-none text-[#173149]" style={showDisplay}>GAME ROOM</div>
                 </div>
                 <button onClick={() => setView("arrival")} className="rounded-full border border-[#173149]/10 bg-white/70 px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#173149] transition hover:bg-white" style={cleanSans}>
                   back outside
@@ -1177,13 +1358,16 @@ export default function FiveToFlipPrototype() {
                   <div className="mt-1 text-3xl leading-none text-[#2d241d]" style={roundedDisplay}>Five to Flip</div>
                 </div>
                 <button onClick={() => setView("library")} className="rounded-full border border-[#3c3428]/10 bg-[#f7f2e9] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#2d241d] transition hover:bg-white" style={cleanSans}>
-                  back to tv room
+                  back to game room
                 </button>
               </div>
 
               <div className="grid gap-6 xl:grid-cols-[1.45fr,0.85fr]">
                 <section className="rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-4 shadow-[0_16px_0_#2D2442] md:p-5">
                   <div className="rounded-[1.7rem] border-2 border-[#2D2442] bg-white p-4 md:p-5">
+                    <div className="mb-6">
+                      <HeroReveal />
+                    </div>
                     <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                       <div>
                         <div className="text-xs font-bold uppercase tracking-[0.28em] text-[#75912B]">Main board</div>
