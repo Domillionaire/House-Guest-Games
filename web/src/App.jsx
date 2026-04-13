@@ -53,6 +53,8 @@ const houseGuestAssets = {
   guestRaincoat: assetPath("scott raincoat.webp"),
   guestGrill: assetPath("scottearlgrill.webp"),
   brandLockup: assetPath("house-guest-lockup-removebg-preview.png"),
+  brandLockupHorizontal: assetPath("House Guest hori.png"),
+  brandLockupGamesHorizontal: assetPath("House Guest games hori.png"),
 };
 
 const guestMoments = [
@@ -719,7 +721,7 @@ function LandingExperience({ onEnter }) {
     <>
       {!introDismissed ? (
         <div
-          className={`fixed inset-0 z-50 overflow-hidden bg-[#09131d] transition-all duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          className={`fixed left-0 top-0 z-50 h-[100svh] w-screen overflow-hidden bg-[#09131d] transition-all duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
             introExiting ? "pointer-events-none -translate-y-[108%] scale-[1.08] rotate-[-2deg] opacity-0 blur-sm" : "translate-y-0 scale-100 opacity-100"
           }`}
         >
@@ -736,7 +738,7 @@ function LandingExperience({ onEnter }) {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.28),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(108,164,204,0.18),transparent_28%)]" />
           <div className={`absolute inset-0 bg-[#fadb4e] transition-all duration-700 ${introExiting ? "opacity-45 scale-[1.25]" : "opacity-0 scale-100"}`} />
 
-          <div className="relative z-10 flex min-h-screen flex-col justify-between px-6 py-6 md:px-10 md:py-8">
+          <div className="relative z-10 flex min-h-[100svh] flex-col justify-between px-6 py-6 md:px-10 md:py-8">
             <div className="flex items-start justify-end">
               <button onClick={dismissIntro} className="rounded-full border border-white/16 bg-black/18 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/88 backdrop-blur transition hover:bg-black/28" style={cleanSans}>
                 skip intro
@@ -752,49 +754,42 @@ function LandingExperience({ onEnter }) {
 
       <section className={`relative min-h-[88vh] overflow-hidden rounded-[3rem] bg-[#edf3f6] shadow-[0_32px_100px_rgba(33,53,71,0.10)] transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${introDismissed ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}>
         <img src={houseGuestAssets.emptySeat} alt="An open seat at the House Guest table" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,16,24,0.76)_0%,rgba(7,16,24,0.58)_26%,rgba(7,16,24,0.22)_56%,rgba(7,16,24,0.10)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.02)_0%,rgba(255,255,255,0.01)_34%,rgba(7,16,24,0.16)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,24,0.34)_0%,rgba(7,16,24,0.18)_16%,rgba(7,16,24,0.36)_44%,rgba(7,16,24,0.58)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.08),transparent_22%),radial-gradient(circle_at_bottom,rgba(255,255,255,0.08),transparent_28%)]" />
 
-        <div className="relative z-10 flex min-h-[88vh] items-start px-6 py-8 md:px-10 md:py-10">
-          <div className="max-w-4xl pt-2 md:pt-6">
-            <div className="flex flex-col gap-8">
-              <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
-                <div className="relative shrink-0">
-                  <div className="absolute -inset-4 rounded-full bg-[#fadb4e]/18 blur-2xl" />
-                  <div className="relative h-24 w-24 overflow-hidden rounded-full ring-[4px] ring-[#fadb4e] shadow-[0_20px_40px_rgba(0,0,0,0.22)] sm:h-28 sm:w-28 md:h-32 md:w-32">
-                    <img src={houseGuestAssets.scottPortrait} alt="Scott Evans welcoming the neighbor in" className="h-full w-full object-cover" />
-                  </div>
-                </div>
-
-                <div className="inline-flex rounded-full bg-[#fadb4e] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.28em] text-[#111111] shadow-[0_12px_24px_rgba(0,0,0,0.10)]" style={cleanSans}>
-                  Hey neighbor!
+        <div className="relative z-10 flex min-h-[88vh] flex-col justify-between px-6 py-8 md:px-10 md:py-10">
+          <div className="flex justify-start">
+            <div className="relative inline-flex min-h-[6rem] items-center pl-24 sm:min-h-[7rem] sm:pl-28 md:min-h-[8rem] md:pl-32">
+              <div className="absolute left-[3.8rem] top-1/2 h-5 w-12 -translate-y-1/2 rounded-full bg-[#fadb4e] sm:left-[4.3rem] sm:h-6 sm:w-14 md:left-[5rem] md:h-7 md:w-16" />
+              <div className="absolute left-0 top-1/2 z-10 -translate-y-1/2">
+                <div className="absolute -inset-4 rounded-full bg-[#fadb4e]/18 blur-2xl" />
+                <div className="relative h-24 w-24 overflow-hidden rounded-full ring-[4px] ring-[#fadb4e] shadow-[0_20px_40px_rgba(0,0,0,0.22)] sm:h-28 sm:w-28 md:h-32 md:w-32">
+                  <img src={houseGuestAssets.scottPortrait} alt="Scott Evans welcoming the neighbor in" className="h-full w-full object-cover" />
                 </div>
               </div>
-
-              <div className="max-w-2xl">
-                <div className="inline-flex flex-col items-start gap-2 md:gap-3">
-                  <BrandWordmark className="h-24 w-auto drop-shadow-[0_10px_24px_rgba(0,0,0,0.18)] md:h-36 lg:h-40" />
-                  <div className="pl-1 text-lg text-white/92 md:text-2xl" style={{ ...gamesDisplay, letterSpacing: "0.08em" }}>
-                    Games
-                  </div>
-                </div>
-
-                <div className="mt-6 text-3xl leading-[0.96] text-white md:text-5xl" style={roundedDisplay}>
-                  Play the games from House Guest.
-                </div>
-                <p className="mt-4 max-w-2xl text-[15px] leading-8 text-white/84 md:text-[17px]" style={cleanSans}>
-                  Pull up, pick a game, and experience the fun of being a neighbor — no invite required.
-                </p>
-
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <button onClick={onEnter} className="rounded-full bg-[#fadb4e] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_18px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
-                    enter the tv room
-                  </button>
-                  <button onClick={() => document.getElementById("around-the-house")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="rounded-full border border-white/16 bg-white/10 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/86 backdrop-blur transition hover:bg-white/16" style={cleanSans}>
-                    see around the house
-                  </button>
-                </div>
+              <div className="relative inline-flex rounded-full bg-[#fadb4e] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.28em] text-[#111111] shadow-[0_12px_24px_rgba(0,0,0,0.10)] sm:px-7 md:px-8 md:py-4" style={cleanSans}>
+                Hey neighbor!
               </div>
+            </div>
+          </div>
+
+          <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center text-center">
+            <img src={houseGuestAssets.brandLockupGamesHorizontal} alt="House Guest Games" className="w-full max-w-[17rem] drop-shadow-[0_12px_28px_rgba(0,0,0,0.18)] sm:max-w-[24rem] md:max-w-[34rem] lg:max-w-[42rem]" />
+
+            <div className="mt-8 text-3xl leading-[0.96] text-white md:text-5xl" style={roundedDisplay}>
+              Play the games from House Guest.
+            </div>
+            <p className="mt-4 max-w-3xl text-[15px] leading-8 text-white/86 md:text-[17px]" style={cleanSans}>
+              Pull up, pick a game, and experience the fun of being a neighbor — no invite required.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
+              <button onClick={onEnter} className="rounded-full bg-[#fadb4e] px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_18px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
+                enter the tv room
+              </button>
+              <button onClick={() => document.getElementById("around-the-house")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="rounded-full border border-white/16 bg-white/10 px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/86 backdrop-blur transition hover:bg-white/16" style={cleanSans}>
+                see around the house
+              </button>
             </div>
           </div>
         </div>
@@ -1145,7 +1140,7 @@ export default function FiveToFlipPrototype() {
 
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap'); html, body, #root { margin: 0; min-height: 100%; } body { overflow-x: hidden; background: #f3f7f9; }`}</style>
       <div className="min-h-screen overflow-hidden bg-[linear-gradient(180deg,#f3f7f9_0%,#eaf1f4_100%)] text-[#173149]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.94),transparent_26%),radial-gradient(circle_at_left,rgba(250,219,78,0.10),transparent_30%),radial-gradient(circle_at_right,rgba(157,204,226,0.10),transparent_32%)]" />
         <div className="pointer-events-none absolute -top-16 left-1/2 h-[24rem] w-[64rem] -translate-x-1/2 rounded-full bg-white/45 blur-3xl" />
