@@ -41,6 +41,8 @@ function assetPath(filename) {
 }
 
 const houseGuestAssets = {
+  tvStand: assetPath("tvstand.png"),
+  gameRoomWall: assetPath("Game room background.png"),
   heroVideo: assetPath("House Guest intro vid.mp4"),
   arrivalFallback: assetPath("scott front door.png"),
   tvRoom: assetPath("Screenshot 2026-04-11 194025.png"),
@@ -999,75 +1001,133 @@ function WatchHouseGuestPage() {
   );
 }
 
-function TVRoomLibrary({ selectedIndex, onPrev, onNext, onOpenGame }) {
+function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame }) {
   const game = gameLibrary[selectedIndex];
+  const isPlayable = game.id === "five-to-flip";
 
   return (
-    <section id="game-room" className="relative overflow-hidden rounded-[2.9rem] bg-[#eaf1f4] shadow-[0_30px_100px_rgba(33,53,71,0.08)]">
-      <img src={houseGuestAssets.tvRoom} alt="House Guest TV room" className="absolute inset-0 h-full w-full object-cover" />
-      <img src={houseGuestAssets.backyardTree} alt="" aria-hidden="true" className="pointer-events-none absolute left-0 top-0 h-full w-[20%] object-cover opacity-18" />
-      <img src={houseGuestAssets.greenery} alt="" aria-hidden="true" className="pointer-events-none absolute right-0 bottom-0 h-[42%] w-[22%] object-cover opacity-18" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.10)_0%,rgba(14,28,40,0.14)_20%,rgba(14,28,40,0.64)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(250,219,78,0.16),transparent_24%),radial-gradient(circle_at_left,rgba(163,206,225,0.14),transparent_26%)]" />
+    <section
+      id="game-room"
+      className="relative overflow-hidden rounded-[2.9rem] shadow-[0_30px_100px_rgba(33,53,71,0.08)]"
+      style={{
+        backgroundImage: `url(${houseGuestAssets.gameRoomWall})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,24,0.06)_0%,rgba(7,16,24,0.12)_26%,rgba(7,16,24,0.28)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_26%),radial-gradient(circle_at_left,rgba(157,204,226,0.08),transparent_22%),radial-gradient(circle_at_right,rgba(250,219,78,0.06),transparent_22%)]" />
 
-      <div className="relative z-10 flex min-h-[44rem] flex-col justify-between px-6 py-6 md:px-8 md:py-8">
+      <div className="relative z-10 flex min-h-[46rem] flex-col px-5 py-5 md:px-8 md:py-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.24)] px-4 py-2 backdrop-blur">
+            <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.22)] px-4 py-2 backdrop-blur">
               <BrandWordmark className="text-[0.95rem]" />
             </div>
             <div className="mt-6 text-4xl leading-[0.88] text-[#fadb4e] md:text-5xl" style={showDisplay}>GAME ROOM</div>
             <p className="mt-3 max-w-lg text-sm leading-7 text-white/82 md:text-base" style={cleanSans}>
-              A good game gets the room talking.
-              <br />
-              A better one gets everybody involved.
+              Pull up to the TV, let the lineup rotate, and choose what the room plays next.
             </p>
           </div>
 
-          <div className="flex gap-2">
-            <button onClick={onPrev} className="flex h-12 w-12 items-center justify-center rounded-full border border-white/14 bg-black/20 text-xl text-white backdrop-blur transition hover:scale-105">‹</button>
-            <button onClick={onNext} className="flex h-12 w-12 items-center justify-center rounded-full border border-white/14 bg-black/20 text-xl text-white backdrop-blur transition hover:scale-105">›</button>
+          <div className="hidden gap-2 sm:flex">
+            <button onClick={onPrev} aria-label="Previous game" className="flex h-12 w-12 items-center justify-center rounded-full border border-white/14 bg-black/20 text-xl text-white backdrop-blur transition hover:scale-105">‹</button>
+            <button onClick={onNext} aria-label="Next game" className="flex h-12 w-12 items-center justify-center rounded-full border border-white/14 bg-black/20 text-xl text-white backdrop-blur transition hover:scale-105">›</button>
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.08fr,0.92fr] lg:items-end">
-          <div className="max-w-2xl text-white">
-            <div className="rounded-[2.2rem] border border-white/14 bg-[rgba(12,24,36,0.52)] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.14)] backdrop-blur md:p-7">
-              <div className="inline-flex rounded-full border border-white/14 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/84" style={cleanSans}>
-                {game.eyebrow}
+        <div className="relative mx-auto mt-8 flex w-full max-w-6xl flex-1 flex-col items-center justify-end">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[20rem] bg-[linear-gradient(180deg,transparent_0%,rgba(18,28,38,0.10)_40%,rgba(18,28,38,0.16)_100%)]" />
+
+          <div className="relative z-20 w-full max-w-[70rem] px-2 md:px-8">
+            <div className="relative mx-auto w-full max-w-5xl">
+              <div className="absolute inset-x-[8%] bottom-[-2.2rem] h-10 rounded-full bg-black/28 blur-2xl md:bottom-[-2.6rem] md:h-12" />
+
+              <div className="relative z-20 mx-auto w-full max-w-4xl md:mb-[-0.6rem]">
+                <div className="relative rounded-[1.9rem] border-[10px] border-[#1a1f24] bg-[#0f1419] p-2 shadow-[0_22px_60px_rgba(0,0,0,0.35)] md:rounded-[2.3rem] md:border-[12px]">
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-[1.2rem] bg-[#0b1620]">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${game.accent} opacity-95`} />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_24%),linear-gradient(180deg,rgba(8,20,30,0.10)_0%,rgba(8,20,30,0.42)_100%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,transparent_16%,transparent_84%,rgba(0,0,0,0.16)_100%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.05)_0%,transparent_8%,transparent_92%,rgba(255,255,255,0.05)_100%)]" />
+
+                    <div className="relative flex h-full flex-col justify-between p-4 text-white md:p-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="inline-flex rounded-full border border-white/16 bg-black/18 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/82 backdrop-blur" style={cleanSans}>
+                          {game.eyebrow}
+                        </div>
+                        <div className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] backdrop-blur ${isPlayable ? "border-[#fadb4e]/40 bg-[#fadb4e]/16 text-[#fff3b0]" : "border-white/16 bg-white/10 text-white/82"}`} style={cleanSans}>
+                          {game.status}
+                        </div>
+                      </div>
+
+                      <div className="max-w-[82%]">
+                        <div className="text-4xl leading-[0.9] text-[#fadb4e] md:text-6xl" style={showDisplay}>{game.title}</div>
+                        <p className="mt-3 max-w-xl text-sm leading-7 text-white/86 md:text-base" style={cleanSans}>{game.blurb}</p>
+                      </div>
+
+                      <div className="flex items-end justify-between gap-4">
+                        <div className="flex gap-2">
+                          {gameLibrary.map((item, index) => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              aria-label={`Show ${item.title}`}
+                              onClick={() => onSelectGame(index)}
+                              className={`h-3 w-3 rounded-full border transition ${index === selectedIndex ? "border-[#fadb4e] bg-[#fadb4e]" : "border-white/34 bg-white/18 hover:bg-white/38"}`}
+                            />
+                          ))}
+                        </div>
+
+                        <button
+                          onClick={() => onOpenGame(game)}
+                          disabled={!isPlayable}
+                          className={`rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] shadow-[0_12px_20px_rgba(0,0,0,0.14)] transition ${isPlayable ? "bg-[#fadb4e] text-[#173149] hover:-translate-y-0.5 hover:brightness-95" : "cursor-not-allowed border border-white/16 bg-white/10 text-white/70"}`}
+                          style={cleanSans}
+                        >
+                          {isPlayable ? "play now" : "coming soon"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="mt-4 text-4xl leading-none text-[#fadb4e] md:text-5xl" style={showDisplay}>{game.title}</div>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-white/84" style={cleanSans}>{game.blurb}</p>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <div className="rounded-full border border-white/14 bg-black/20 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/76" style={cleanSans}>{game.status}</div>
-                <button onClick={() => onOpenGame(game)} className="rounded-full bg-[#fadb4e] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_12px_20px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 hover:brightness-95" style={cleanSans}>
-                  {game.id === "five-to-flip" ? "play now" : "view room"}
-                </button>
+
+              <div className="relative z-10 mx-auto mt-[-0.5rem] w-full max-w-5xl md:mt-[-0.85rem]">
+                <img
+                  src={houseGuestAssets.tvStand}
+                  alt="TV stand and decor"
+                  className="pointer-events-none block w-full object-contain select-none"
+                  draggable="false"
+                />
               </div>
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/12 bg-[rgba(12,24,36,0.38)] p-4 shadow-[0_14px_30px_rgba(0,0,0,0.12)] backdrop-blur md:p-5">
-            <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/56" style={cleanSans}>lineup</div>
-            <div className="space-y-2">
-              {gameLibrary.map((item, index) => (
+          <div className="relative z-20 mt-6 flex justify-center gap-2 sm:hidden">
+            <button onClick={onPrev} aria-label="Previous game" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/14 bg-black/28 text-xl text-white backdrop-blur transition hover:scale-105">‹</button>
+            <button onClick={onNext} aria-label="Next game" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/14 bg-black/28 text-xl text-white backdrop-blur transition hover:scale-105">›</button>
+          </div>
+
+          <div className="relative z-20 mt-5 flex flex-wrap items-center justify-center gap-3 pb-2 text-center">
+            {gameLibrary.map((item, index) => {
+              const isActive = index === selectedIndex;
+              const playable = item.id === "five-to-flip";
+              return (
                 <button
                   key={item.id}
-                  onClick={() => onOpenGame(item, true)}
-                  className={`flex w-full items-center justify-between gap-4 rounded-[1.2rem] px-4 py-4 text-left transition ${
-                    index === selectedIndex
-                      ? "bg-[rgba(255,255,255,0.14)] text-white"
-                      : "bg-[rgba(255,255,255,0.05)] text-white/88 hover:bg-[rgba(255,255,255,0.10)]"
-                  }`}
+                  onClick={() => onSelectGame(index)}
+                  className={`rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition ${isActive ? "bg-[#fadb4e] text-[#173149] shadow-[0_10px_24px_rgba(0,0,0,0.14)]" : "border border-white/16 bg-white/10 text-white/82 hover:bg-white/16"}`}
+                  style={cleanSans}
                 >
-                  <div>
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/56" style={cleanSans}>{item.eyebrow}</div>
-                    <div className={`mt-2 text-2xl leading-none ${index === selectedIndex ? "text-[#fadb4e]" : "text-white"}`} style={showDisplay}>{item.title}</div>
-                  </div>
-                  <div className={`h-3 w-3 rounded-full ${index === selectedIndex ? "bg-[#fadb4e]" : "bg-white/24"}`} />
+                  {item.title}
+                  <span className={`ml-2 ${isActive ? "text-[#173149]/72" : "text-white/56"}`}>
+                    {playable ? "• live" : "• soon"}
+                  </span>
                 </button>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -1149,6 +1209,16 @@ export default function FiveToFlipPrototype() {
   const boardSize = Math.sqrt(tileCount);
   const previewSlide = slides[0];
   const questionDots = Array.from({ length: 5 }, (_, i) => i + 1);
+
+  useEffect(() => {
+    if (view !== "library") return;
+
+    const interval = window.setInterval(() => {
+      setSelectedGameIndex((prev) => (prev + 1) % gameLibrary.length);
+    }, 5000);
+
+    return () => window.clearInterval(interval);
+  }, [view]);
 
   const resetTurn = () => {
     setQuestionsUsed(0);
@@ -1300,10 +1370,13 @@ export default function FiveToFlipPrototype() {
     setSelectedGameIndex((prev) => (prev === gameLibrary.length - 1 ? 0 : prev + 1));
   };
 
-  const openGameFromLibrary = (game, onlySelect = false) => {
+  const selectGameByIndex = (index) => {
+    setSelectedGameIndex(index);
+  };
+
+  const openGameFromLibrary = (game) => {
     const index = gameLibrary.findIndex((item) => item.id === game.id);
     if (index >= 0) setSelectedGameIndex(index);
-    if (onlySelect) return;
     if (game.id === "five-to-flip") setView("game");
   };
 
@@ -1351,7 +1424,7 @@ export default function FiveToFlipPrototype() {
                 </button>
               </div>
 
-              <TVRoomLibrary selectedIndex={selectedGameIndex} onPrev={selectPrevGame} onNext={selectNextGame} onOpenGame={openGameFromLibrary} />
+              <TVRoomLibrary selectedIndex={selectedGameIndex} onPrev={selectPrevGame} onNext={selectNextGame} onSelectGame={selectGameByIndex} onOpenGame={openGameFromLibrary} />
             </div>
           ) : null}
 
