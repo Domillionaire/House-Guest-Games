@@ -1011,10 +1011,7 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
       id="game-room"
       className="relative overflow-hidden rounded-[2.9rem] shadow-[0_30px_100px_rgba(33,53,71,0.08)]"
       style={{
-        backgroundImage: `url(${houseGuestAssets.gameRoomWall})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundColor: "rgba(255,255,255,0.04)",
       }}
     >
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,24,0.06)_0%,rgba(7,16,24,0.12)_26%,rgba(7,16,24,0.28)_100%)]" />
@@ -1023,12 +1020,8 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
       <div className="relative z-10 flex min-h-[46rem] flex-col px-5 py-5 md:px-8 md:py-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.22)] px-4 py-2 backdrop-blur">
-              <BrandWordmark
-                srcOverride={houseGuestAssets.brandLockupGamesHorizontal}
-                alt="House Guest Games"
-                className="h-7 w-auto md:h-8"
-              />
+            <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.22)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/88 backdrop-blur" style={cleanSans}>
+              inside the game room
             </div>
             <div className="mt-6 text-4xl leading-[0.88] text-[#fadb4e] md:text-5xl" style={showDisplay}>GAME ROOM</div>
             <p className="mt-3 max-w-lg text-sm leading-7 text-white/82 md:text-base" style={cleanSans}>
@@ -1390,9 +1383,9 @@ export default function FiveToFlipPrototype() {
   return (
     <>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap'); html, body, #root { margin: 0; min-height: 100%; } body { overflow-x: hidden; background: #f3f7f9; }`}</style>
-      <div className="min-h-screen overflow-hidden bg-[linear-gradient(180deg,#f3f7f9_0%,#eaf1f4_100%)] text-[#173149]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.94),transparent_26%),radial-gradient(circle_at_left,rgba(250,219,78,0.10),transparent_30%),radial-gradient(circle_at_right,rgba(157,204,226,0.10),transparent_32%)]" />
-        <div className="pointer-events-none absolute -top-16 left-1/2 h-[24rem] w-[64rem] -translate-x-1/2 rounded-full bg-white/45 blur-3xl" />
+      <div className={`min-h-screen overflow-hidden text-[#173149] ${view === "library" ? "bg-transparent" : "bg-[linear-gradient(180deg,#f3f7f9_0%,#eaf1f4_100%)]"}`} style={view === "library" ? { backgroundImage: `url(${houseGuestAssets.gameRoomWall})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" } : undefined}>
+        <div className={`pointer-events-none absolute inset-0 ${view === "library" ? "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.20),transparent_26%),radial-gradient(circle_at_left,rgba(250,219,78,0.06),transparent_30%),radial-gradient(circle_at_right,rgba(157,204,226,0.06),transparent_32%)]" : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.94),transparent_26%),radial-gradient(circle_at_left,rgba(250,219,78,0.10),transparent_30%),radial-gradient(circle_at_right,rgba(157,204,226,0.10),transparent_32%)]"}`} />
+        <div className={`pointer-events-none absolute -top-16 left-1/2 h-[24rem] w-[64rem] -translate-x-1/2 rounded-full blur-3xl ${view === "library" ? "bg-white/12" : "bg-white/45"}`} />
 
         <div className="relative mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
           {view === "arrival" ? (
@@ -1420,11 +1413,8 @@ export default function FiveToFlipPrototype() {
           ) : null}
 
           {view === "library" ? (
-            <div
-              className="space-y-6 rounded-[2.5rem] bg-cover bg-center bg-no-repeat p-4 md:p-5"
-              style={{ backgroundImage: `url(${houseGuestAssets.gameRoomWall})` }}
-            >
-              <div className="flex items-center justify-between rounded-[1.6rem] bg-[rgba(255,255,255,0.08)] px-3 py-3 backdrop-blur-[2px]">
+            <div className="space-y-6 p-0">
+              <div className="flex items-center justify-between rounded-[1.6rem] bg-[rgba(255,255,255,0.06)] px-3 py-3 backdrop-blur-[2px]">
                 <div>
                   <BrandWordmark
                     srcOverride={houseGuestAssets.brandLockupGamesHorizontal}
