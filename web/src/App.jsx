@@ -505,7 +505,7 @@ function RevealPanel({ rows, cols, revealed, aspectClass = "aspect-[4/3]", cover
   );
 }
 
-function HeroReveal({ fill = false }) {
+function HeroReveal({ fill = false, playOnce = false, onComplete = null }) {
   const rows = 3;
   const cols = 4;
   const total = rows * cols;
@@ -581,10 +581,16 @@ function HeroReveal({ fill = false }) {
         setFanfare(true);
       }, cursor);
 
-      cursor += 2350;
+      cursor += playOnce ? 1200 : 2350;
 
       addTimer(() => {
         if (cancelled) return;
+
+        if (playOnce) {
+          onComplete?.();
+          return;
+        }
+
         setFinalReveal(false);
         setFanfare(false);
         setOpenTiles([]);
@@ -599,7 +605,7 @@ function HeroReveal({ fill = false }) {
       cancelled = true;
       clearTimers();
     };
-  }, []);
+  }, [playOnce, onComplete, total]);
 
   const activeSet = new Set(finalReveal ? Array.from({ length: total }, (_, i) => i) : openTiles);
 
@@ -689,6 +695,7 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
   const videoRef = useRef(null);
   const [introExiting, setIntroExiting] = useState(false);
   const [introDismissed, setIntroDismissed] = useState(introAlreadySeen);
+  const [videoReady, setVideoReady] = useState(false);
 
   const dismissIntro = () => {
     if (introExiting || introDismissed) return;
@@ -712,6 +719,7 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
   useEffect(() => {
     if (introAlreadySeen) {
       setIntroDismissed(true);
+      setVideoReady(false);
       return;
     }
 
@@ -720,6 +728,10 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
 
     const applyPlaybackRate = () => {
       video.playbackRate = 0.62;
+    };
+
+    const handleCanPlay = () => {
+      setVideoReady(true);
     };
 
     const handleEnded = () => {
@@ -731,10 +743,14 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
 
     applyPlaybackRate();
     video.addEventListener("loadedmetadata", applyPlaybackRate);
+    video.addEventListener("loadeddata", handleCanPlay);
+    video.addEventListener("canplay", handleCanPlay);
     video.addEventListener("ended", handleEnded);
 
     return () => {
       video.removeEventListener("loadedmetadata", applyPlaybackRate);
+      video.removeEventListener("loadeddata", handleCanPlay);
+      video.removeEventListener("canplay", handleCanPlay);
       video.removeEventListener("ended", handleEnded);
     };
   }, []);
@@ -747,6 +763,12 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
             introExiting ? "pointer-events-none -translate-y-[108%] scale-[1.08] rotate-[-2deg] opacity-0 blur-sm" : "translate-y-0 scale-100 opacity-100"
           }`}
         >
+          <img
+            src={houseGuestAssets.tvRoom}
+            alt=""
+            aria-hidden="true"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${videoReady ? "opacity-0" : "opacity-100"}`}
+          />
           <video
             ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
@@ -755,6 +777,7 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
             muted
             playsInline
             preload="auto"
+            poster={houseGuestAssets.tvRoom}
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,14,22,0.12)_0%,rgba(6,14,22,0.16)_22%,rgba(6,14,22,0.44)_54%,rgba(6,14,22,0.86)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.28),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(108,164,204,0.18),transparent_28%)]" />
@@ -1020,15 +1043,22 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
       <div className="relative z-10 flex min-h-[46rem] flex-col px-5 py-5 md:px-8 md:py-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.22)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/88 backdrop-blur" style={cleanSans}>
-              inside the game room
+            <div className="inline-flex items-center gap-3">
+              <div className="h-[1px] w-10 bg-white/30" />
+              <div className="text-[10px] font-semibold uppercase tracking-[0.35em] text-white/70" style={cleanSans}>
+                inside the game room
+              </div>
+              <div className="h-[1px] w-10 bg-white/30" />
             </div>
-            
-            <p className="mt-3 max-w-lg text-sm leading-7 text-white/82 md:text-base" style={cleanSans}>
-              A good game gets the room talking.
-              <br />
-              A better one gets everybody involved.
-            </p>
+
+            <div className="mt-4 max-w-xl">
+              <div className="text-2xl leading-[1.1] text-white md:text-3xl" style={roundedDisplay}>
+                A good game gets the room talking.
+              </div>
+              <div className="mt-2 text-2xl leading-[1.1] text-[#fadb4e] md:text-3xl" style={showDisplay}>
+                A better one gets everybody involved.
+              </div>
+            </div>
           </div>
 
           <div className="hidden gap-2 sm:flex">
@@ -1046,7 +1076,7 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
 
               <div className="relative z-20 mx-auto w-full max-w-4xl md:mb-[-0.6rem]">
                 <div className="relative rounded-none border-[2px] border-[#111417] bg-[#0f1419] p-[3px] shadow-[0_22px_60px_rgba(0,0,0,0.35)] md:rounded-none md:border-[3px]">
-                  <div className="relative aspect-[16/9] overflow-hidden rounded-none bg-[#0b1620]">
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-none bg-[#0b1620] shadow-[0_0_34px_rgba(250,219,78,0.16)] contrast-[1.08] brightness-[1.05]">
                     <div className={`absolute inset-0 bg-gradient-to-br ${game.accent} opacity-95`} />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_24%),linear-gradient(180deg,rgba(8,20,30,0.10)_0%,rgba(8,20,30,0.42)_100%)]" />
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,transparent_16%,transparent_84%,rgba(0,0,0,0.16)_100%)]" />
@@ -1135,6 +1165,102 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
   );
 }
 
+function TVZoomTransition({ game, onComplete }) {
+  const [active, setActive] = useState(false);
+  const [phase, setPhase] = useState("zoom");
+
+  useEffect(() => {
+    const startTimer = window.setTimeout(() => setActive(true), 30);
+    const phaseTimer = window.setTimeout(() => setPhase("hero_reveal"), 1900);
+
+    return () => {
+      window.clearTimeout(startTimer);
+      window.clearTimeout(phaseTimer);
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[90] overflow-hidden bg-[#09131d]">
+      {phase === "zoom" ? (
+        <>
+          <div
+            className={`absolute inset-0 transition-all duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              active ? "bg-black/70 backdrop-blur-sm" : "bg-black/0"
+            }`}
+          />
+          <div
+            className={`absolute inset-0 bg-cover bg-center transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              active ? "scale-[1.08]" : "scale-100"
+            }`}
+            style={{ backgroundImage: `url(${houseGuestAssets.gameRoomWall})` }}
+          />
+
+          <div className="absolute inset-0 flex items-center justify-center px-4">
+            <div
+              className={`relative w-full max-w-5xl transition-all duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                active ? "scale-[2.65] opacity-100" : "scale-[0.82] opacity-96"
+              }`}
+            >
+              <div className="absolute inset-x-[8%] bottom-[-2.2rem] h-10 rounded-full bg-black/36 blur-2xl md:bottom-[-2.6rem] md:h-12" />
+
+              <div className="relative z-20 mx-auto w-full max-w-4xl md:mb-[-0.6rem]">
+                <div className="relative rounded-none border-[2px] border-[#111417] bg-[#0f1419] p-[3px] shadow-[0_22px_60px_rgba(0,0,0,0.35)] md:border-[3px]">
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-none bg-[#0b1620] shadow-[0_0_34px_rgba(250,219,78,0.16)] contrast-[1.08] brightness-[1.05]">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${game?.accent || "from-[#dcc25f] via-[#d8b650] to-[#b98a34]"} opacity-95`} />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_24%),linear-gradient(180deg,rgba(8,20,30,0.10)_0%,rgba(8,20,30,0.42)_100%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,transparent_16%,transparent_84%,rgba(0,0,0,0.16)_100%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.05)_0%,transparent_8%,transparent_92%,rgba(255,255,255,0.05)_100%)]" />
+                    <div className={`absolute inset-0 bg-black transition-opacity duration-[1300ms] ${active ? "opacity-78" : "opacity-0"}`} />
+
+                    <div className="relative flex h-full flex-col justify-between p-4 text-white md:p-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="inline-flex rounded-full border border-white/16 bg-black/18 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/82 backdrop-blur" style={cleanSans}>
+                          {game?.eyebrow || "guessing game"}
+                        </div>
+                        <div className="rounded-full border border-[#fadb4e]/40 bg-[#fadb4e]/16 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#fff3b0] backdrop-blur" style={cleanSans}>
+                          entering game
+                        </div>
+                      </div>
+
+                      <div className="max-w-[82%]">
+                        <div className="text-4xl leading-[0.9] text-[#fadb4e] md:text-6xl" style={showDisplay}>{game?.title || "Five to Flip"}</div>
+                        <p className="mt-3 max-w-xl text-sm leading-7 text-white/86 md:text-base" style={cleanSans}>
+                          Step into the screen.
+                        </p>
+                      </div>
+
+                      <div className="flex items-end justify-between gap-4">
+                        <div className="h-[2px] w-20 bg-white/28" />
+                        <div className="rounded-full border border-white/16 bg-white/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/82 backdrop-blur" style={cleanSans}>
+                          loading room energy
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`relative z-10 mx-auto mt-[-0.5rem] w-full max-w-5xl transition-all duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${active ? "opacity-0 scale-[1.08]" : "opacity-100 scale-100"}`}>
+                <img
+                  src={houseGuestAssets.tvStand}
+                  alt=""
+                  aria-hidden="true"
+                  className="pointer-events-none block w-full object-contain select-none"
+                  draggable="false"
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="absolute inset-0 bg-[#09131d]">
+          <HeroReveal fill playOnce onComplete={onComplete} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function MatchFormatCard({ format, resetMatch }) {
   return (
     <div className="rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-4 shadow-[0_16px_0_#2D2442]">
@@ -1204,11 +1330,15 @@ export default function FiveToFlipPrototype() {
   const [showSolvedBoard, setShowSolvedBoard] = useState(false);
   const [currentCeleb, setCurrentCeleb] = useState(() => drawRandomCeleb());
   const [showCelebPeek, setShowCelebPeek] = useState(false);
+  const [transitionGame, setTransitionGame] = useState(null);
 
   const tileCount = BOARD_TILE_COUNT;
   const boardSize = Math.sqrt(tileCount);
   const previewSlide = slides[0];
   const questionDots = Array.from({ length: 5 }, (_, i) => i + 1);
+  const isImageGuessPhase = imageGuessWindow !== null;
+  const playerAIsActionDevice = isImageGuessPhase ? imageGuessWindow === "A" : activePlayer === "A";
+  const playerBIsActionDevice = isImageGuessPhase ? imageGuessWindow === "B" : activePlayer === "B";
 
   useEffect(() => {
     if (view !== "library") return;
@@ -1377,7 +1507,10 @@ export default function FiveToFlipPrototype() {
   const openGameFromLibrary = (game) => {
     const index = gameLibrary.findIndex((item) => item.id === game.id);
     if (index >= 0) setSelectedGameIndex(index);
-    if (game.id === "five-to-flip") setView("game");
+    if (game.id === "five-to-flip") {
+      setTransitionGame(game);
+      setView("transition");
+    }
   };
 
   return (
@@ -1443,172 +1576,145 @@ export default function FiveToFlipPrototype() {
             </div>
           ) : null}
 
+          {view === "transition" ? (
+            <TVZoomTransition
+              game={transitionGame || gameLibrary[selectedGameIndex]}
+              onComplete={() => {
+                setView("game");
+              }}
+            />
+          ) : null}
+
           {view === "game" ? (
             <>
-              <div className="mb-8 flex items-center justify-between rounded-[1.8rem] border border-[#3c3428]/10 bg-white/70 px-5 py-4 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
+              <div className="mb-6 flex items-center justify-between rounded-[1.8rem] border border-[#3c3428]/10 bg-white/70 px-5 py-4 shadow backdrop-blur">
                 <div>
-                  <BrandWordmark
-                    srcOverride={houseGuestAssets.brandLockupGamesHorizontal}
-                    alt="House Guest Games"
-                    className="h-8 w-auto md:h-9"
-                  />
-                  <div className="mt-1 text-3xl leading-none text-[#2d241d]" style={roundedDisplay}>Five to Flip</div>
+                  <BrandWordmark srcOverride={houseGuestAssets.brandLockupGamesHorizontal} className="h-8" />
+                  <div className="mt-1 text-3xl" style={roundedDisplay}>Five to Flip</div>
                 </div>
-                <button onClick={() => setView("library")} className="rounded-full border border-[#3c3428]/10 bg-[#f7f2e9] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#2d241d] transition hover:bg-white" style={cleanSans}>
-                  back to game room
-                </button>
+                <button onClick={() => setView("library")} className="rounded-full border px-4 py-2 text-xs">back</button>
               </div>
 
-              <div className="grid gap-6 xl:grid-cols-[1.45fr,0.85fr]">
-                <section className="rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-4 shadow-[0_16px_0_#2D2442] md:p-5">
-                  <div className="rounded-[1.7rem] border-2 border-[#2D2442] bg-white p-4 md:p-5">
-                    <div className="mb-6">
-                      <HeroReveal />
-                    </div>
-                    <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                      <div>
-                        <div className="text-xs font-bold uppercase tracking-[0.28em] text-[#75912B]">Main board</div>
-                        <h2 className="mt-2 text-2xl font-black lowercase tracking-tight text-[#2D2442] md:text-4xl" style={roundedDisplay}>hidden image reveal</h2>
-                        <p className="mt-2 text-sm text-[#4A4260]">One image panel. Flip covers away. Call the image to win the round.</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-full border-2 border-[#2D2442] bg-[#FFF9DD] px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#2D2442]">Round {round}</div>
-                        <div className="rounded-full border-2 border-[#2D2442] bg-[#F3A33A] px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#2D2442]">First to {format}</div>
-                      </div>
-                    </div>
+              <div className="grid gap-6 xl:grid-cols-[0.9fr,1.4fr,0.9fr] items-start">
+                <div className="relative rounded-[2.4rem] bg-[#0b0f13] p-[10px] shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+                  <div className="absolute top-[6px] left-1/2 -translate-x-1/2 h-[6px] w-[60px] rounded-full bg-black/60" />
+                  <div className="rounded-[2rem] border border-black/60 bg-[#0f1419] text-white p-4">
+                    <div className="text-xs uppercase opacity-60">Player A Device</div>
+                    <div className="mt-4 text-sm">{holder === "A" ? "Celeb Holder" : playerAIsActionDevice ? "Action Device" : "Waiting"}</div>
 
-                    <div className="rounded-[1.5rem] border-2 border-[#2D2442] bg-[#FDF7DA] p-3 md:p-4">
-                      <div className="mb-4 flex items-center justify-between rounded-2xl border-2 border-[#2D2442] bg-[#F6E46D] px-4 py-3">
-                        <div>
-                          <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#75912B]">Reveal pressure</div>
-                          <div className="mt-1 text-lg font-black text-[#2D2442]">{showSolvedBoard ? tileCount : flipped.length} / {tileCount} covers opened</div>
-                        </div>
-                        <div className="text-right text-sm text-[#4A4260]">Fast celeb guesses unlock bigger reveals.</div>
-                      </div>
+                    <div className="mt-4 space-y-3">
+                      {holder === "A" ? (
+                        <>
+                          <button onClick={peekCelebCard} className="w-full rounded-lg bg-[#fadb4e] text-black py-2">Show Celeb</button>
+                          <button onClick={hideCelebCard} className="w-full rounded-lg border py-2">Hide</button>
+                          <button onClick={redrawCelebCard} className="w-full rounded-lg border py-2">New Celeb</button>
+                        </>
+                      ) : null}
 
-                      <RevealPanel rows={boardSize} cols={boardSize} revealed={showSolvedBoard ? Array.from({ length: tileCount }, (_, i) => i) : flipped} aspectClass="aspect-square" tileDelay={0} slide={previewSlide} />
-                    </div>
-                  </div>
-                </section>
-
-                <section className="space-y-6">
-                  <MatchFormatCard format={format} resetMatch={resetMatch} />
-
-                  <div className="rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-4 shadow-[0_16px_0_#2D2442]">
-                    <div className="rounded-[1.7rem] border-2 border-[#2D2442] bg-white p-4">
-                      <div className="mb-4 flex items-start justify-between gap-3">
-                        <div>
-                          <div className="text-xs font-bold uppercase tracking-[0.28em] text-[#75912B]">Scoreboard</div>
-                          <h2 className="mt-2 text-2xl font-black lowercase tracking-tight text-[#2D2442]" style={roundedDisplay}>podiums</h2>
-                        </div>
-                        <button onClick={() => resetMatch()} className="rounded-full border-2 border-[#2D2442] bg-[#F3A33A] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#2D2442] transition hover:brightness-105">Reset match</button>
-                      </div>
-
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-[1.4rem] border-2 border-[#2D2442] bg-[#93B437] p-[1px]"><div className="rounded-[1.25rem] bg-[#FFF9DD] p-4"><div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#75912B]">Player A</div><div className="mt-3 text-5xl font-black leading-none text-[#2D2442]">{score.A}</div><div className="mt-3 inline-flex rounded-full border border-[#2D2442] bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#2D2442]">{holder === "A" ? "Holding celeb" : activePlayer === "A" ? "Questioning" : "Waiting"}</div></div></div>
-                        <div className="rounded-[1.4rem] border-2 border-[#2D2442] bg-[#F6E46D] p-[1px]"><div className="rounded-[1.25rem] bg-[#FFF9DD] p-4"><div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#A06700]">Player B</div><div className="mt-3 text-5xl font-black leading-none text-[#2D2442]">{score.B}</div><div className="mt-3 inline-flex rounded-full border border-[#2D2442] bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#2D2442]">{holder === "B" ? "Holding celeb" : activePlayer === "B" ? "Questioning" : "Waiting"}</div></div></div>
-                      </div>
-
-                      <div className="mt-4 rounded-[1.4rem] border-2 border-[#2D2442] bg-[#FFF9DD] p-4">
-                        <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#75912B]">Current call</div>
-                        <p className="mt-2 text-sm leading-7 text-[#4A4260]">{status}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-4 shadow-[0_16px_0_#2D2442]">
-                    <div className="rounded-[1.7rem] border-2 border-[#2D2442] bg-white p-4">
-                      <div className="mb-4">
-                        <div className="text-xs font-bold uppercase tracking-[0.28em] text-[#75912B]">Turn controls</div>
-                        <h2 className="mt-2 text-2xl font-black lowercase tracking-tight text-[#2D2442]" style={roundedDisplay}>control booth</h2>
-                      </div>
-
-                      <div className="rounded-[1.4rem] border-2 border-[#2D2442] bg-[#FFF9DD] p-4">
-                        <div className="flex items-center justify-between gap-4">
-                          <div>
-                            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#75912B]">Questions used</div>
-                            <div className="mt-2 text-4xl font-black leading-none text-[#2D2442]">{questionsUsed}<span className="text-xl text-[#6E6682]"> / 5</span></div>
+                      {isImageGuessPhase ? (
+                        imageGuessWindow === "A" ? (
+                          <>
+                            <button onClick={() => imageGuessWindow && awardRound(imageGuessWindow)} className="w-full rounded-lg bg-[#F3A33A] py-2">Image Correct</button>
+                            <button onClick={missImageGuess} className="w-full rounded-lg border py-2">Miss</button>
+                          </>
+                        ) : (
+                          <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
+                            Waiting for the other device to make the image call.
                           </div>
-                          <div className="flex gap-2">
-                            {questionDots.map((dot) => {
-                              const active = dot <= questionsUsed;
-                              return <span key={dot} className={`h-4 w-4 rounded-full border-2 border-[#2D2442] ${active ? "bg-[#F3A33A]" : "bg-white"}`} />;
-                            })}
-                          </div>
+                        )
+                      ) : activePlayer === "B" ? (
+                        <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
+                          Receive the question here and judge whether the celeb guess is right.
                         </div>
-
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          <button onClick={useQuestion} disabled={questionsUsed >= 5 || imageGuessWindow !== null || showSolvedBoard} className="rounded-2xl border-2 border-[#2D2442] bg-[#93B437] px-4 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">Use a question</button>
-                          <button onClick={onCorrectCelebGuess} disabled={showSolvedBoard} className="rounded-2xl border-2 border-[#2D2442] bg-[#F6E46D] px-4 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">Celeb guess correct</button>
-                          <button onClick={onWrongCelebGuess} disabled={showSolvedBoard} className="rounded-2xl border-2 border-[#2D2442] bg-white px-4 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:bg-[#F8F1C8] disabled:cursor-not-allowed disabled:opacity-40 sm:col-span-2">Celeb guess wrong</button>
+                      ) : (
+                        <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
+                          Waiting for Player B to ask the next question.
                         </div>
-                      </div>
-
-                      <div className="mt-4 rounded-[1.4rem] border-2 border-[#2D2442] bg-[#FFF9DD] p-4">
-                        <div className="mb-4 rounded-[1.2rem] border-2 border-[#2D2442] bg-white p-4">
-                          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                            <div>
-                              <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#75912B]">Private celeb card</div>
-                              <div className="mt-2 text-xl font-black lowercase tracking-tight text-[#2D2442]" style={roundedDisplay}>player {holder} holds the card</div>
-                              <p className="mt-2 text-sm leading-6 text-[#4A4260]">The app knows the celeb. Only the holder should peek at the card.</p>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              <button onClick={peekCelebCard} disabled={showSolvedBoard} className="rounded-2xl border-2 border-[#2D2442] bg-[#93B437] px-4 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">Show celeb</button>
-                              <button onClick={hideCelebCard} className="rounded-2xl border-2 border-[#2D2442] bg-white px-4 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:bg-[#F8F1C8]">Hide card</button>
-                              <button onClick={redrawCelebCard} disabled={showSolvedBoard} className="rounded-2xl border-2 border-[#2D2442] bg-[#F6E46D] px-4 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">New celeb</button>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                          <div>
-                            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#75912B]">Image guess window</div>
-                            <div className="mt-2 text-xl font-black lowercase tracking-tight text-[#2D2442]" style={roundedDisplay}>{imageGuessWindow ? `player ${imageGuessWindow} is live` : "waiting for reveal result"}</div>
-                          </div>
-                          <div className="rounded-full border-2 border-[#2D2442] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#2D2442]">Holder: Player {holder} · Questioner: Player {activePlayer}</div>
-                        </div>
-
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          <button onClick={() => imageGuessWindow && awardRound(imageGuessWindow)} disabled={!imageGuessWindow || showSolvedBoard} className="rounded-2xl border-2 border-[#2D2442] bg-[#F3A33A] px-4 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40">Image guess correct</button>
-                          <button onClick={missImageGuess} disabled={showSolvedBoard} className="rounded-2xl border-2 border-[#2D2442] bg-white px-4 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:bg-[#F8F1C8] disabled:cursor-not-allowed disabled:opacity-40">No one got it</button>
-                        </div>
-                      </div>
+                      )}
                     </div>
-                  </div>
 
-                  <div className="rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-4 shadow-[0_16px_0_#2D2442]">
-                    <div className="rounded-[1.7rem] border-2 border-[#2D2442] bg-white p-4">
-                      <div className="text-xs font-bold uppercase tracking-[0.28em] text-[#75912B]">Rule card</div>
-                      <h2 className="mt-2 text-2xl font-black lowercase tracking-tight text-[#2D2442]" style={roundedDisplay}>how the round works</h2>
-                      <div className="mt-4 space-y-3 text-sm leading-7 text-[#4A4260]">
-                        <div className="rounded-2xl border-2 border-[#2D2442] bg-[#FFF9DD] px-4 py-3">1. Ask up to 5 questions about the celeb in your opponent’s hand.</div>
-                        <div className="rounded-2xl border-2 border-[#2D2442] bg-[#FFF9DD] px-4 py-3">2. Make one official celeb guess whenever you’re ready.</div>
-                        <div className="rounded-2xl border-2 border-[#2D2442] bg-[#FFF9DD] px-4 py-3">3. Guess faster to earn more flips on the hidden image.</div>
-                        <div className="rounded-2xl border-2 border-[#2D2442] bg-[#FFF9DD] px-4 py-3">4. Correct image guess wins the round. If nobody gets it, roles switch.</div>
-                      </div>
-                    </div>
+                    <div className="mt-6 text-xs opacity-60">Score</div>
+                    <div className="text-3xl">{score.A}</div>
                   </div>
-                </section>
+                </div>
+
+                <div className="rounded-[2rem] border bg-white p-4">
+                  <div className="mb-4 text-sm uppercase opacity-60">Board</div>
+
+                  <RevealPanel
+                    rows={boardSize}
+                    cols={boardSize}
+                    revealed={showSolvedBoard ? Array.from({ length: tileCount }, (_, i) => i) : flipped}
+                    aspectClass="aspect-square"
+                    slide={previewSlide}
+                  />
+
+                  <div className="mt-4 text-sm text-center opacity-70">{status}</div>
+                </div>
+
+                <div className="relative rounded-[2.4rem] bg-[#0b0f13] p-[10px] shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+                  <div className="absolute top-[6px] left-1/2 -translate-x-1/2 h-[6px] w-[60px] rounded-full bg-black/60" />
+                  <div className="rounded-[2rem] border border-black/60 bg-[#0f1419] text-white p-4">
+                    <div className="text-xs uppercase opacity-60">Player B Device</div>
+                    <div className="mt-4 text-sm">{holder === "B" ? "Celeb Holder" : playerBIsActionDevice ? "Action Device" : "Waiting"}</div>
+
+                    <div className="mt-4 space-y-3">
+                      {holder === "B" ? (
+                        <>
+                          <button onClick={peekCelebCard} className="w-full rounded-lg bg-[#fadb4e] text-black py-2">Show Celeb</button>
+                          <button onClick={hideCelebCard} className="w-full rounded-lg border py-2">Hide</button>
+                          <button onClick={redrawCelebCard} className="w-full rounded-lg border py-2">New Celeb</button>
+                        </>
+                      ) : null}
+
+                      {isImageGuessPhase ? (
+                        imageGuessWindow === "B" ? (
+                          <>
+                            <button onClick={() => imageGuessWindow && awardRound(imageGuessWindow)} className="w-full rounded-lg bg-[#F3A33A] py-2">Image Correct</button>
+                            <button onClick={missImageGuess} className="w-full rounded-lg border py-2">Miss</button>
+                          </>
+                        ) : (
+                          <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
+                            Waiting for the other device to make the image call.
+                          </div>
+                        )
+                      ) : activePlayer === "B" ? (
+                        <>
+                          <button onClick={useQuestion} className="w-full rounded-lg bg-[#93B437] py-2">Ask Question ({questionsUsed}/5)</button>
+                          <button onClick={onCorrectCelebGuess} className="w-full rounded-lg bg-[#fadb4e] text-black py-2">Celeb Guess Correct</button>
+                          <button onClick={onWrongCelebGuess} className="w-full rounded-lg border py-2">Celeb Guess Wrong</button>
+                        </>
+                      ) : (
+                        <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
+                          Waiting for your turn to investigate and make the celeb call.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-6 text-xs opacity-60">Score</div>
+                    <div className="text-3xl">{score.B}</div>
+                  </div>
+                </div>
               </div>
             </>
           ) : null}
-        </div>
 
-        {showCelebPeek && currentCeleb ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2D2442]/70 p-4">
-            <div className="w-full max-w-xl rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-3 shadow-[0_20px_80px_rgba(0,0,0,0.25)]">
-              <div className="rounded-[1.6rem] border-2 border-[#2D2442] bg-white p-6 text-center">
-                <div className="text-xs font-black uppercase tracking-[0.35em] text-[#75912B]">Private celeb card</div>
-                <div className="mt-3 text-sm font-black uppercase tracking-[0.2em] text-[#4A4260]">Only player {holder} should look</div>
-                <div className="mt-6 rounded-[1.6rem] border-2 border-[#2D2442] bg-[#FFF9DD] px-6 py-10 text-4xl font-black lowercase text-[#2D2442] sm:text-5xl" style={roundedDisplay}>{currentCeleb.name}</div>
-                <div className="mt-6 flex justify-center gap-3">
-                  <button onClick={hideCelebCard} className="rounded-2xl border-2 border-[#2D2442] bg-[#93B437] px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:brightness-105">Hide card</button>
-                  <button onClick={redrawCelebCard} className="rounded-2xl border-2 border-[#2D2442] bg-white px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:bg-[#F8F1C8]">New celeb</button>
+          {showCelebPeek && currentCeleb ? (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2D2442]/70 p-4">
+              <div className="w-full max-w-xl rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-3 shadow-[0_20px_80px_rgba(0,0,0,0.25)]">
+                <div className="rounded-[1.6rem] border-2 border-[#2D2442] bg-white p-6 text-center">
+                  <div className="text-xs font-black uppercase tracking-[0.35em] text-[#75912B]">Private celeb card</div>
+                  <div className="mt-3 text-sm font-black uppercase tracking-[0.2em] text-[#4A4260]">Only player {holder} should look</div>
+                  <div className="mt-6 rounded-[1.6rem] border-2 border-[#2D2442] bg-[#FFF9DD] px-6 py-10 text-4xl font-black lowercase text-[#2D2442] sm:text-5xl" style={roundedDisplay}>{currentCeleb.name}</div>
+                  <div className="mt-6 flex justify-center gap-3">
+                    <button onClick={hideCelebCard} className="rounded-2xl border-2 border-[#2D2442] bg-[#93B437] px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:brightness-105">Hide card</button>
+                    <button onClick={redrawCelebCard} className="rounded-2xl border-2 border-[#2D2442] bg-white px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:bg-[#F8F1C8]">New celeb</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     </>
   );
