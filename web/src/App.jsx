@@ -1023,7 +1023,7 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
             <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.22)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/88 backdrop-blur" style={cleanSans}>
               inside the game room
             </div>
-            <div className="mt-6 text-4xl leading-[0.88] text-[#fadb4e] md:text-5xl" style={showDisplay}>GAME ROOM</div>
+            
             <p className="mt-3 max-w-lg text-sm leading-7 text-white/82 md:text-base" style={cleanSans}>
               A good game gets the room talking.
               <br />
@@ -1414,18 +1414,29 @@ export default function FiveToFlipPrototype() {
 
           {view === "library" ? (
             <div className="space-y-6 p-0">
-              <div className="flex items-center justify-between rounded-[1.6rem] bg-[rgba(255,255,255,0.06)] px-3 py-3 backdrop-blur-[2px]">
-                <div>
-                  <BrandWordmark
-                    srcOverride={houseGuestAssets.brandLockupGamesHorizontal}
-                    alt="House Guest Games"
-                    className="h-8 w-auto md:h-9"
-                  />
-                  <div className="mt-1 text-3xl leading-none text-[#173149]" style={showDisplay}>GAME ROOM</div>
+              <div className="relative flex items-center justify-between overflow-hidden rounded-[1.6rem] px-3 py-3">
+                {/* greenery header background (top crop, no stretch) */}
+                <img
+                  src={houseGuestAssets.greenery}
+                  alt=""
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-0 top-0 h-[140%] w-full object-cover object-top opacity-80"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(8,20,30,0.55)_0%,rgba(8,20,30,0.35)_40%,rgba(8,20,30,0.55)_100%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_30%)]" />
+                <div className="relative z-10 flex w-full items-center justify-between">
+                  <div>
+                    <BrandWordmark
+                      srcOverride={houseGuestAssets.brandLockupGamesHorizontal}
+                      alt="House Guest Games"
+                      className="h-8 w-auto md:h-9"
+                    />
+                    <div className="mt-1 text-3xl leading-none text-[#173149]" style={showDisplay}>GAME ROOM</div>
+                  </div>
+                  <button onClick={() => setView("arrival")} className="rounded-full border border-white/14 bg-[rgba(11,23,34,0.28)] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[rgba(11,23,34,0.38)]" style={cleanSans}>
+                    back outside
+                  </button>
                 </div>
-                <button onClick={() => setView("arrival")} className="rounded-full border border-white/14 bg-[rgba(11,23,34,0.28)] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[rgba(11,23,34,0.38)]" style={cleanSans}>
-                  back outside
-                </button>
               </div>
 
               <TVRoomLibrary selectedIndex={selectedGameIndex} onPrev={selectPrevGame} onNext={selectNextGame} onSelectGame={selectGameByIndex} onOpenGame={openGameFromLibrary} />
