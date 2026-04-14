@@ -225,14 +225,15 @@ const celebrityDeck = [
   { name: "Dolly Parton", bucket: "icons_comedy", tags: ["singer", "country", "icon"], era: "legacy" },
 ];
 
-function BrandWordmark({ dark = false, className = "", stacked = false }) {
+function BrandWordmark({ dark = false, className = "", stacked = false, srcOverride = null, alt = "House Guest" }) {
   const [imageMissing, setImageMissing] = useState(false);
+  const imageSrc = srcOverride || houseGuestAssets.brandLockup;
 
   if (!imageMissing) {
     return (
       <img
-        src={houseGuestAssets.brandLockup}
-        alt="House Guest"
+        src={imageSrc}
+        alt={alt}
         className={className}
         onError={() => setImageMissing(true)}
       />
@@ -1023,11 +1024,17 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="inline-flex rounded-full border border-white/16 bg-[rgba(11,23,34,0.22)] px-4 py-2 backdrop-blur">
-              <BrandWordmark className="text-[0.95rem]" />
+              <BrandWordmark
+                srcOverride={houseGuestAssets.brandLockupGamesHorizontal}
+                alt="House Guest Games"
+                className="h-7 w-auto md:h-8"
+              />
             </div>
             <div className="mt-6 text-4xl leading-[0.88] text-[#fadb4e] md:text-5xl" style={showDisplay}>GAME ROOM</div>
             <p className="mt-3 max-w-lg text-sm leading-7 text-white/82 md:text-base" style={cleanSans}>
-              Pull up to the TV, let the lineup rotate, and choose what the room plays next.
+              A good game gets the room talking.
+              <br />
+              A better one gets everybody involved.
             </p>
           </div>
 
@@ -1045,8 +1052,8 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
               <div className="absolute inset-x-[8%] bottom-[-2.2rem] h-10 rounded-full bg-black/28 blur-2xl md:bottom-[-2.6rem] md:h-12" />
 
               <div className="relative z-20 mx-auto w-full max-w-4xl md:mb-[-0.6rem]">
-                <div className="relative rounded-[1.9rem] border-[10px] border-[#1a1f24] bg-[#0f1419] p-2 shadow-[0_22px_60px_rgba(0,0,0,0.35)] md:rounded-[2.3rem] md:border-[12px]">
-                  <div className="relative aspect-[16/9] overflow-hidden rounded-[1.2rem] bg-[#0b1620]">
+                <div className="relative rounded-none border-[2px] border-[#111417] bg-[#0f1419] p-[3px] shadow-[0_22px_60px_rgba(0,0,0,0.35)] md:rounded-none md:border-[3px]">
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-none bg-[#0b1620]">
                     <div className={`absolute inset-0 bg-gradient-to-br ${game.accent} opacity-95`} />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_24%),linear-gradient(180deg,rgba(8,20,30,0.10)_0%,rgba(8,20,30,0.42)_100%)]" />
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,transparent_16%,transparent_84%,rgba(0,0,0,0.16)_100%)]" />
@@ -1413,13 +1420,20 @@ export default function FiveToFlipPrototype() {
           ) : null}
 
           {view === "library" ? (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between px-1 py-1">
+            <div
+              className="space-y-6 rounded-[2.5rem] bg-cover bg-center bg-no-repeat p-4 md:p-5"
+              style={{ backgroundImage: `url(${houseGuestAssets.gameRoomWall})` }}
+            >
+              <div className="flex items-center justify-between rounded-[1.6rem] bg-[rgba(255,255,255,0.08)] px-3 py-3 backdrop-blur-[2px]">
                 <div>
-                  <BrandWordmark dark className="text-[0.95rem]" />
+                  <BrandWordmark
+                    srcOverride={houseGuestAssets.brandLockupGamesHorizontal}
+                    alt="House Guest Games"
+                    className="h-8 w-auto md:h-9"
+                  />
                   <div className="mt-1 text-3xl leading-none text-[#173149]" style={showDisplay}>GAME ROOM</div>
                 </div>
-                <button onClick={() => setView("arrival")} className="rounded-full border border-[#173149]/10 bg-white/70 px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#173149] transition hover:bg-white" style={cleanSans}>
+                <button onClick={() => setView("arrival")} className="rounded-full border border-white/14 bg-[rgba(11,23,34,0.28)] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[rgba(11,23,34,0.38)]" style={cleanSans}>
                   back outside
                 </button>
               </div>
@@ -1432,7 +1446,11 @@ export default function FiveToFlipPrototype() {
             <>
               <div className="mb-8 flex items-center justify-between rounded-[1.8rem] border border-[#3c3428]/10 bg-white/70 px-5 py-4 shadow-[0_18px_50px_rgba(60,52,40,0.08)] backdrop-blur">
                 <div>
-                  <BrandWordmark dark className="text-[0.95rem]" />
+                  <BrandWordmark
+                    srcOverride={houseGuestAssets.brandLockupGamesHorizontal}
+                    alt="House Guest Games"
+                    className="h-8 w-auto md:h-9"
+                  />
                   <div className="mt-1 text-3xl leading-none text-[#2d241d]" style={roundedDisplay}>Five to Flip</div>
                 </div>
                 <button onClick={() => setView("library")} className="rounded-full border border-[#3c3428]/10 bg-[#f7f2e9] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#2d241d] transition hover:bg-white" style={cleanSans}>
