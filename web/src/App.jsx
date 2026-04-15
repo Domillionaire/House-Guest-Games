@@ -1313,6 +1313,378 @@ function SiteNav({ activePage, onGoGamesHome, onGoWatchHouseGuest, onGoTVRoom })
   );
 }
 
+const GAME_IMAGE_LIBRARY = [
+  {
+    id: "hot-comb",
+    filename: "hot comb.png",
+    label: "Hot Comb",
+    answers: ["hot comb", "hotcomb"],
+  },
+  {
+    id: "guac",
+    filename: "guac.png",
+    label: "Avocado",
+    answers: ["avocado", "guac", "guacamole"],
+  },
+  {
+    id: "hood-marg",
+    filename: "hood marg.png",
+    label: "Hood Margarita",
+    answers: ["hood margarita", "margarita", "hood marg"],
+  },
+  {
+    id: "smoothie",
+    filename: "smoothie.png",
+    label: "Smoothie",
+    answers: ["smoothie", "erewhon smoothie", "hailey bieber smoothie", "hailey smoothie"],
+  },
+  {
+    id: "earl",
+    filename: "earl.png",
+    label: "Rooster",
+    answers: ["rooster", "earl"],
+  },
+];
+
+function GamePageMarqueeTitle({ children }) {
+  return (
+    <div className="relative inline-flex items-center justify-center px-2 py-1">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 translate-y-[4px] scale-[1.02] blur-[2px] opacity-65"
+        style={{
+          ...cleanSans,
+          fontSize: "clamp(2rem,4.5vw,3.2rem)",
+          fontWeight: 900,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "#7a3f13",
+          textShadow: "0 8px 24px rgba(255,159,58,0.22)",
+        }}
+      >
+        {children}
+      </div>
+
+      <div
+        className="relative"
+        style={{
+          ...cleanSans,
+          fontSize: "clamp(2rem,4.5vw,3.2rem)",
+          fontWeight: 900,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          lineHeight: 1,
+          color: "transparent",
+          WebkitTextStroke: "2px #8f4814",
+          backgroundImage:
+            "radial-gradient(circle at 8px 8px, rgba(255,248,220,0.95) 0 2px, transparent 2.6px), linear-gradient(180deg, #ffd06f 0%, #ffb347 34%, #ff9329 68%, #d96a14 100%)",
+          backgroundSize: "16px 16px, 100% 100%",
+          backgroundPosition: "0 0, 0 0",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          textShadow: "0 1px 0 rgba(255,244,212,0.9), 0 3px 0 rgba(166,84,17,0.65), 0 0 18px rgba(255,174,70,0.26)",
+          filter: "drop-shadow(0 0 12px rgba(255,171,64,0.18))",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function gameImagePath(filename) {
+  return assetPath(filename);
+}
+
+function drawRandomGameImage(excludeId = null) {
+  const pool = excludeId ? GAME_IMAGE_LIBRARY.filter((image) => image.id !== excludeId) : GAME_IMAGE_LIBRARY;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function normalizeGameImageGuess(value) {
+  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "");
+}
+
+function GameImageBoardScene({ row, col, rows, cols, image }) {
+  const imageSrc = gameImagePath(image.filename);
+
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-[0.78rem] bg-[#17110d]">
+      <div
+        className="absolute"
+        style={{
+          width: `${cols * 100}%`,
+          height: `${rows * 100}%`,
+          left: `-${col * 100}%`,
+          top: `-${row * 100}%`,
+          backgroundImage: `url("${imageSrc}")`,
+          backgroundSize: `${cols * 100}% ${rows * 100}%`,
+          backgroundPosition: `${(col / Math.max(cols - 1, 1)) * 100}% ${(row / Math.max(rows - 1, 1)) * 100}%`,
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "#17110d",
+        }}
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02)_0%,rgba(0,0,0,0.10)_100%)]" />
+      </div>
+    </div>
+  );
+}
+
+function GamePageRevealPanel({ rows, cols, revealed, image, aspectClass = "aspect-square", tileDelay = 0 }) {
+  const total = rows * cols;
+
+  return (
+    <div className={`relative overflow-hidden rounded-[1.35rem] border border-[#6f5436] bg-[linear-gradient(180deg,#2a1f18_0%,#17110e_100%)] shadow-[0_18px_40px_rgba(0,0,0,0.28)] ${aspectClass}`}>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+      <div className="absolute inset-[10px] rounded-[1rem] border border-white/5 bg-[linear-gradient(180deg,#231a15_0%,#15100d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]" />
+
+      <div
+        className="absolute inset-[18px] grid gap-[8px]"
+        style={{
+          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+        }}
+      >
+        {Array.from({ length: total }, (_, index) => {
+          const isRevealed = revealed.includes(index);
+          const row = Math.floor(index / cols);
+          const col = index % cols;
+
+          return (
+            <div key={index} className="[perspective:1200px]">
+              <div
+                className="relative h-full w-full"
+                style={{
+                  transformStyle: "preserve-3d",
+                  transform: isRevealed ? "rotateY(180deg)" : "rotateY(0deg)",
+                  transitionProperty: "transform",
+                  transitionDuration: "900ms",
+                  transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+                  transitionDelay: `${index * tileDelay}ms`,
+                }}
+              >
+                <div
+                  className="absolute inset-0 overflow-hidden rounded-[0.82rem] border border-[#b58b55] bg-[radial-gradient(circle_at_top,rgba(255,231,178,0.18),transparent_30%),linear-gradient(180deg,#8d7965_0%,#6d5a4c_52%,#534236_100%)] shadow-[0_10px_16px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.12)]"
+                  style={{ backfaceVisibility: "hidden" }}
+                >
+                  <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.12)_0%,transparent_28%,transparent_72%,rgba(0,0,0,0.10)_100%)]" />
+                  <div className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,211,120,0.24)_0%,rgba(255,211,120,0.10)_38%,transparent_70%)] blur-[1px]" />
+                  <div
+                    className="absolute inset-0 flex items-center justify-center text-[clamp(1.4rem,3vw,2.2rem)] font-black text-[#ffe5ad]"
+                    style={{
+                      ...cleanSans,
+                      textShadow: "0 0 10px rgba(255,204,102,0.30), 0 0 22px rgba(255,170,70,0.18), 0 2px 0 rgba(92,55,24,0.55)",
+                    }}
+                  >
+                    ?
+                  </div>
+                </div>
+
+                <div
+                  className="absolute inset-0 overflow-hidden rounded-[0.82rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]"
+                  style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                >
+                  <GameImageBoardScene row={row} col={col} rows={rows} cols={cols} image={image} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function GamePagePhoneShell({ title, subtitle, children, tilt = 0 }) {
+  return (
+    <div className="flex justify-center xl:block" style={{ transform: `rotate(${tilt}deg)` }}>
+      <div className="relative w-[260px] md:w-[280px] xl:w-[260px]">
+        <div className="relative rounded-[2.6rem] bg-[linear-gradient(180deg,#151313_0%,#090909_100%)] p-[10px] shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
+          <div className="absolute top-[6px] left-1/2 -translate-x-1/2 h-[6px] w-[70px] rounded-full bg-black/70" />
+          <div className="absolute left-[-3px] top-[120px] h-[40px] w-[4px] rounded bg-black/70" />
+          <div className="absolute left-[-3px] top-[170px] h-[30px] w-[4px] rounded bg-black/70" />
+          <div className="absolute right-[-3px] top-[130px] h-[50px] w-[4px] rounded bg-black/70" />
+
+          <div className="rounded-[2rem] border border-[#2f2119] bg-[radial-gradient(circle_at_top,rgba(255,214,148,0.07),transparent_26%),linear-gradient(180deg,#211712_0%,#16100d_52%,#0f0b0a_100%)] text-white px-4 py-5 h-[520px] flex flex-col shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+            <div className="text-[10px] uppercase tracking-[0.26em] text-[#d7b98b]/72" style={cleanSans}>{title}</div>
+            <div className="mt-3 text-sm text-[#f0e2ce]/82" style={cleanSans}>{subtitle}</div>
+            <div className="mt-4 space-y-3 flex-1 overflow-y-auto pr-1">{children}</div>
+            <div className="mt-4 flex justify-center">
+              <div className="h-[5px] w-[80px] rounded-full bg-[#f0d3a2]/20" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GamePageSurfaceNote({ children }) {
+  return (
+    <div className="rounded-[0.95rem] border border-[#5a4131] bg-[linear-gradient(180deg,rgba(255,248,238,0.05)_0%,rgba(255,248,238,0.02)_100%)] px-3 py-3 text-sm leading-6 text-[#f0deca]/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]" style={cleanSans}>
+      {children}
+    </div>
+  );
+}
+
+function GamePageActionButton({ children, variant = "secondary", onClick }) {
+  const styles = {
+    primary: "border-[#e6a75d] bg-[linear-gradient(180deg,#f2b86c_0%,#cf6f29_100%)] text-[#fff8ef] shadow-[0_12px_22px_rgba(130,62,20,0.30),0_0_20px_rgba(241,166,75,0.12),inset_0_1px_0_rgba(255,255,255,0.18)]",
+    accent: "border-[#e2bf83] bg-[linear-gradient(180deg,#f7d99a_0%,#e0a245_100%)] text-[#3d2412] shadow-[0_12px_22px_rgba(130,89,32,0.22),0_0_18px_rgba(244,209,135,0.10),inset_0_1px_0_rgba(255,255,255,0.18)]",
+    secondary: "border-[#735440] bg-[linear-gradient(180deg,#412f25_0%,#261b15_100%)] text-[#f2e2cf] shadow-[0_8px_16px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.06)]",
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full rounded-[0.95rem] border py-2.5 text-sm font-semibold uppercase tracking-[0.12em] transition hover:brightness-[1.04] ${styles[variant]}`}
+      style={cleanSans}
+    >
+      {children}
+    </button>
+  );
+}
+
+function GamePageChip({ children, tone = "neutral" }) {
+  const tones = {
+    neutral: "border-[#6b513e] bg-[rgba(255,248,238,0.05)] text-[#e9d5bd]",
+    warm: "border-[#d0a264] bg-[rgba(240,172,83,0.10)] text-[#f4d79d]",
+    cream: "border-[#e2c59a] bg-[rgba(255,248,238,0.82)] text-[#6a4022]",
+  };
+
+  return (
+    <div className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${tones[tone]}`} style={cleanSans}>
+      {children}
+    </div>
+  );
+}
+
+function GamePageTextInput({ value, onChange, onSubmit, placeholder }) {
+  return (
+    <div className="rounded-[1rem] border border-[#5f4431] bg-[linear-gradient(180deg,rgba(255,250,242,0.06)_0%,rgba(255,250,242,0.03)_100%)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSubmit();
+        }}
+        placeholder={placeholder}
+        className="w-full rounded-[0.85rem] border border-[#77563f] bg-[rgba(255,248,238,0.06)] px-3 py-3 text-sm text-[#f7eddc] outline-none placeholder:text-[#cdb79a]/60"
+        style={cleanSans}
+      />
+    </div>
+  );
+}
+
+function GamePageCelebPreviewCard({ name }) {
+  return (
+    <div className="rounded-[1.25rem] border border-[#9b7448] bg-[radial-gradient(circle_at_top,rgba(255,216,149,0.12),transparent_26%),linear-gradient(180deg,rgba(66,46,33,0.96)_0%,rgba(31,21,17,0.98)_100%)] p-4 shadow-[0_14px_28px_rgba(0,0,0,0.24)]">
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-[10px] uppercase tracking-[0.24em] text-[#d9b476]/85" style={cleanSans}>
+          private celeb card
+        </div>
+        <GamePageChip tone="warm">holder only</GamePageChip>
+      </div>
+      <div className="mt-3 text-xs leading-5 text-[#f0deca]/68" style={cleanSans}>
+        Keep this hidden from the other player while they ask questions.
+      </div>
+      <div className="mt-4 rounded-[1rem] border border-[#5f4431] bg-[linear-gradient(180deg,rgba(255,250,242,0.06)_0%,rgba(255,250,242,0.03)_100%)] px-4 py-6 text-center text-3xl text-[#f7eddc] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" style={roundedDisplay}>
+        {name}
+      </div>
+    </div>
+  );
+}
+
+function GamePageMatchFormatPicker({ format, onChange }) {
+  return (
+    <div className="mt-4 rounded-[1rem] border border-[#dfe5eb] bg-[#fbfcfd] px-4 py-3" style={cleanSans}>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#7f6d58]">match length</div>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {formats.map((item) => {
+          const active = item.id === format;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onChange(item.id)}
+              className={`rounded-[0.95rem] border px-3 py-2 text-sm font-semibold uppercase tracking-[0.12em] transition ${
+                active
+                  ? "border-[#d5a15a] bg-[linear-gradient(180deg,#f6d392_0%,#e3a347_100%)] text-[#4b2b16] shadow-[0_8px_16px_rgba(149,94,35,0.15)]"
+                  : "border-[#dbcfc0] bg-white text-[#6b5846] hover:bg-[#f8f2ea]"
+              }`}
+            >
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function GamePageRulesOverlay({ open, onClose, format }) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]" onClick={onClose}>
+      <div
+        className="w-full max-w-2xl rounded-[1.8rem] border border-[#b98d60] bg-[radial-gradient(circle_at_top,rgba(255,210,138,0.14),transparent_24%),linear-gradient(180deg,#5b4030_0%,#2a1d17_100%)] p-5 text-[#f7eddc] shadow-[0_24px_60px_rgba(0,0,0,0.35)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#d8b57b]" style={cleanSans}>Five to Flip</div>
+            <div className="mt-2 text-4xl leading-none text-[#fff2da]" style={roundedDisplay}>Rules</div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#7b5a41] bg-[rgba(255,248,238,0.05)] text-xl text-[#f6dfb5] transition hover:bg-[rgba(255,248,238,0.10)]"
+            aria-label="Close rules"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="mt-3 text-xs leading-6 text-[#e8d3b2]/78" style={cleanSans}>
+          Inspired by <span className="text-[#ffdca1] font-semibold">Face Card</span> from <span className="text-[#ffdca1] font-semibold">House Guest</span>.
+        </div>
+
+        <div className="mt-5 space-y-4 text-sm leading-7 text-[#f2dfc8]" style={cleanSans}>
+          <div className="rounded-[1rem] border border-[#5f4431] bg-[rgba(255,248,238,0.04)] px-4 py-3">
+            Each round starts with a <span className="text-[#ffdca1] font-semibold">Holder</span> and a <span className="text-[#ffdca1] font-semibold">Guesser</span>. The Holder privately sees the celeb and answers the Guesser’s questions out loud.
+          </div>
+
+          <div className="rounded-[1rem] border border-[#5f4431] bg-[rgba(255,248,238,0.04)] px-4 py-3">
+            The Guesser can ask up to <span className="text-[#ffdca1] font-semibold">5 questions</span>, then makes <span className="text-[#ffdca1] font-semibold">one celeb guess</span>. The Holder confirms whether that celeb guess is correct or wrong.
+          </div>
+
+          <div className="rounded-[1rem] border border-[#5f4431] bg-[rgba(255,248,238,0.04)] px-4 py-3">
+            If the celeb guess is <span className="text-[#ffdca1] font-semibold">correct</span>, the <span className="text-[#ffdca1] font-semibold">Guesser</span> earns the image guess. Reveal tiles based on question count: <span className="text-[#ffdca1] font-semibold">1–2 questions = 4 tiles</span>, <span className="text-[#ffdca1] font-semibold">3 questions = 3 tiles</span>, <span className="text-[#ffdca1] font-semibold">4–5 questions = 2 tiles</span>.
+          </div>
+
+          <div className="rounded-[1rem] border border-[#5f4431] bg-[rgba(255,248,238,0.04)] px-4 py-3">
+            If the celeb guess is <span className="text-[#ffdca1] font-semibold">wrong</span>, reveal <span className="text-[#ffdca1] font-semibold">1 tile</span> and the <span className="text-[#ffdca1] font-semibold">Holder</span> earns the image guess instead.
+          </div>
+
+          <div className="rounded-[1rem] border border-[#5f4431] bg-[rgba(255,248,238,0.04)] px-4 py-3">
+            The player who earns the image guess types the answer on their phone. The round ends only when the image is guessed <span className="text-[#ffdca1] font-semibold">correctly</span>.
+          </div>
+
+          <div className="rounded-[1rem] border border-[#5f4431] bg-[rgba(255,248,238,0.04)] px-4 py-3">
+            If the image guess is <span className="text-[#ffdca1] font-semibold">wrong</span>, roles fully switch, a new celeb is assigned, the 5-question allowance resets, and play continues on the <span className="text-[#ffdca1] font-semibold">same partially revealed image</span>.
+          </div>
+
+          <div className="rounded-[1rem] border border-[#5f4431] bg-[rgba(255,248,238,0.04)] px-4 py-3">
+            Match length can be <span className="text-[#ffdca1] font-semibold">1, 3, or 5 rounds</span>. Whoever wins the most rounds wins the match, and roles swap between rounds. Current selection: <span className="text-[#ffdca1] font-semibold">{format === 1 ? "1 round" : `${format} rounds`}</span>.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FiveToFlipPrototype() {
   const [format, setFormat] = useState(3);
   const [view, setView] = useState("arrival");
@@ -1324,21 +1696,59 @@ export default function FiveToFlipPrototype() {
   const [questionsUsed, setQuestionsUsed] = useState(0);
   const [round, setRound] = useState(1);
   const [score, setScore] = useState({ A: 0, B: 0 });
-  const [status, setStatus] = useState("Ask up to 5 questions, then make one celeb guess.");
+  const [status, setStatus] = useState("Questions used: 0 of 5.");
   const [flipped, setFlipped] = useState([]);
   const [imageGuessWindow, setImageGuessWindow] = useState(null);
   const [showSolvedBoard, setShowSolvedBoard] = useState(false);
   const [currentCeleb, setCurrentCeleb] = useState(() => drawRandomCeleb());
+  const [currentImage, setCurrentImage] = useState(() => drawRandomGameImage());
   const [showCelebPeek, setShowCelebPeek] = useState(false);
+  const [celebGuessPending, setCelebGuessPending] = useState(false);
+  const [showRules, setShowRules] = useState(false);
+  const [imageGuessInput, setImageGuessInput] = useState("");
   const [transitionGame, setTransitionGame] = useState(null);
+  const [gamePageMounted, setGamePageMounted] = useState(false);
+  const roundAdvanceTimeoutRef = useRef(null);
 
   const tileCount = BOARD_TILE_COUNT;
   const boardSize = Math.sqrt(tileCount);
-  const previewSlide = slides[0];
-  const questionDots = Array.from({ length: 5 }, (_, i) => i + 1);
   const isImageGuessPhase = imageGuessWindow !== null;
-  const playerAIsActionDevice = isImageGuessPhase ? imageGuessWindow === "A" : activePlayer === "A";
-  const playerBIsActionDevice = isImageGuessPhase ? imageGuessWindow === "B" : activePlayer === "B";
+  const currentAnswerAliases = currentImage?.answers || [];
+  const requiredWins = Math.ceil(format / 2);
+  const winningScore = Math.max(score.A, score.B);
+  const phaseLabel = showSolvedBoard
+    ? winningScore >= requiredWins
+      ? "match result"
+      : "round result"
+    : isImageGuessPhase
+      ? "image guess"
+      : celebGuessPending
+        ? "celeb confirmation"
+        : "question phase";
+
+  const boardPrompt = showSolvedBoard
+    ? winningScore >= requiredWins
+      ? "MATCH WON"
+      : "ROUND WON"
+    : isImageGuessPhase
+      ? `PLAYER ${imageGuessWindow}, ENTER THE IMAGE ANSWER`
+      : celebGuessPending
+        ? `PLAYER ${holder}, CONFIRM THE CELEB GUESS`
+        : "HOLDER: ANSWER THE QUESTIONS";
+
+  const boardSubPrompt = showSolvedBoard
+    ? winningScore >= requiredWins
+      ? "The match is complete."
+      : "Full reveal stays on screen before the next round."
+    : isImageGuessPhase
+      ? `Only Player ${imageGuessWindow} can type the image answer.`
+      : celebGuessPending
+        ? `Waiting on Player ${holder}.`
+        : null;
+
+  const playerARole = holder === "A" ? "Holder" : "Guesser";
+  const playerBRole = holder === "B" ? "Holder" : "Guesser";
+  const questionDots = Array.from({ length: 5 }, (_, i) => i + 1);
 
   useEffect(() => {
     if (view !== "library") return;
@@ -1350,27 +1760,51 @@ export default function FiveToFlipPrototype() {
     return () => window.clearInterval(interval);
   }, [view]);
 
+  useEffect(() => {
+    return () => {
+      if (roundAdvanceTimeoutRef.current) {
+        window.clearTimeout(roundAdvanceTimeoutRef.current);
+        roundAdvanceTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (view === "game") {
+      setGamePageMounted(true);
+    }
+  }, [view]);
+
   const resetTurn = () => {
     setQuestionsUsed(0);
     setImageGuessWindow(null);
     setShowSolvedBoard(false);
     setShowCelebPeek(false);
-    setStatus("Ask up to 5 questions, then make one celeb guess.");
+    setCelebGuessPending(false);
+    setImageGuessInput("");
+    setStatus("Questions used: 0 of 5.");
   };
 
   const resetMatch = (nextFormat = format) => {
+    if (roundAdvanceTimeoutRef.current) {
+      window.clearTimeout(roundAdvanceTimeoutRef.current);
+      roundAdvanceTimeoutRef.current = null;
+    }
     setFormat(nextFormat);
     setRound(1);
     setScore({ A: 0, B: 0 });
     setActivePlayer("B");
     setHolder("A");
     setQuestionsUsed(0);
-    setStatus("Ask up to 5 questions, then make one celeb guess.");
     setFlipped([]);
     setImageGuessWindow(null);
     setShowSolvedBoard(false);
     setShowCelebPeek(false);
+    setCelebGuessPending(false);
+    setImageGuessInput("");
+    setStatus("Questions used: 0 of 5.");
     setCurrentCeleb(drawRandomCeleb());
+    setCurrentImage(drawRandomGameImage());
   };
 
   const getRevealWeight = (index) => {
@@ -1412,70 +1846,110 @@ export default function FiveToFlipPrototype() {
   };
 
   const useQuestion = () => {
-    if (questionsUsed >= 5 || imageGuessWindow || showSolvedBoard) return;
+    if (questionsUsed >= 5 || imageGuessWindow || showSolvedBoard || celebGuessPending) return;
     const next = questionsUsed + 1;
     setQuestionsUsed(next);
-    setStatus(next === 5 ? "5 questions used. Final celeb guess required now." : `Question ${next} asked. Keep narrowing it down or guess now.`);
+    setStatus(next === 5 ? "Questions used: 5 of 5. The guesser must guess the celeb now." : `Questions used: ${next} of 5.`);
+  };
+
+  const handleReadyToGuess = () => {
+    if (imageGuessWindow || showSolvedBoard || celebGuessPending) return;
+    setCelebGuessPending(true);
+    setStatus(`Celeb guess spoken. Waiting on Player ${holder} to confirm.`);
   };
 
   const onCorrectCelebGuess = () => {
     if (showSolvedBoard) return;
+    setCelebGuessPending(false);
+    setImageGuessInput("");
     let revealCount = 2;
     if (questionsUsed <= 2) revealCount = 4;
     else if (questionsUsed === 3) revealCount = 3;
     flipRandomTiles(revealCount);
     setImageGuessWindow(activePlayer);
-    setStatus(`Correct celeb guess by Player ${activePlayer}. Reveal ${revealCount} tiles, then Player ${activePlayer} gets the image guess.`);
+    setStatus(`Celeb guess correct. Player ${activePlayer} now has the image guess.`);
   };
 
   const onWrongCelebGuess = () => {
     if (showSolvedBoard) return;
+    setCelebGuessPending(false);
+    setImageGuessInput("");
     flipRandomTiles(1);
     const other = activePlayer === "A" ? "B" : "A";
     setImageGuessWindow(other);
-    setStatus(`Wrong celeb guess. Reveal 1 tile. Player ${other} gets the image guess chance.`);
+    setStatus(`Celeb guess wrong. 1 tile revealed. Player ${other} now has the image guess.`);
   };
 
   const awardRound = (player) => {
+    if (roundAdvanceTimeoutRef.current) {
+      window.clearTimeout(roundAdvanceTimeoutRef.current);
+      roundAdvanceTimeoutRef.current = null;
+    }
+
     const nextScore = { ...score, [player]: score[player] + 1 };
     const nextRoundNumber = round + 1;
     const nextHolder = holder === "A" ? "B" : "A";
-    const nextActive = activePlayer === "A" ? "B" : "A";
+    const nextActivePlayer = activePlayer === "A" ? "B" : "A";
 
     setScore(nextScore);
     setShowSolvedBoard(true);
     setImageGuessWindow(null);
     setShowCelebPeek(false);
+    setCelebGuessPending(false);
+    setImageGuessInput("");
 
-    if (nextScore[player] >= format) {
+    if (nextScore[player] >= requiredWins) {
       setStatus(`Player ${player} guessed the image and wins the match.`);
       return;
     }
 
-    setStatus(`Player ${player} guessed the image. Full reveal stays on screen for 7 seconds before the next round.`);
+    setStatus(`Player ${player} wins the round. Full reveal stays up briefly.`);
 
-    window.setTimeout(() => {
+    roundAdvanceTimeoutRef.current = window.setTimeout(() => {
+      roundAdvanceTimeoutRef.current = null;
       setRound(nextRoundNumber);
       setFlipped([]);
       setShowSolvedBoard(false);
-      setActivePlayer(nextActive);
       setHolder(nextHolder);
-      setCurrentCeleb((prev) => drawRandomCeleb(prev?.name));
+      setActivePlayer(nextActivePlayer);
       setQuestionsUsed(0);
       setImageGuessWindow(null);
-      setStatus(`Round ${nextRoundNumber} starts with switched roles and a new celeb card.`);
+      setCelebGuessPending(false);
+      setImageGuessInput("");
+      setCurrentCeleb((prev) => drawRandomCeleb(prev?.name));
+      setCurrentImage((prev) => drawRandomGameImage(prev?.id));
+      setStatus(`Round ${nextRoundNumber} begins. Roles swapped. New celeb assigned.`);
     }, 7000);
   };
 
   const missImageGuess = () => {
     if (showSolvedBoard) return;
-    const nextActive = activePlayer === "A" ? "B" : "A";
     const nextHolder = holder === "A" ? "B" : "A";
-    setActivePlayer(nextActive);
+    const nextActivePlayer = activePlayer === "A" ? "B" : "A";
     setHolder(nextHolder);
-    setCurrentCeleb((prev) => drawRandomCeleb(prev?.name));
+    setActivePlayer(nextActivePlayer);
     resetTurn();
-    setStatus("No one got the image. Roles switch and a new celeb card is assigned.");
+    setCurrentCeleb((prev) => drawRandomCeleb(prev?.name));
+    setStatus("Image guess wrong. Roles switched. Same image stays in play.");
+  };
+
+  const submitImageGuess = (player) => {
+    if (imageGuessWindow !== player || showSolvedBoard) return;
+    const normalizedInput = normalizeGameImageGuess(imageGuessInput);
+
+    if (!normalizedInput) {
+      setStatus(`Player ${player}, enter an image answer on your phone.`);
+      return;
+    }
+
+    const isCorrect = currentAnswerAliases.some((answer) => normalizeGameImageGuess(answer) === normalizedInput);
+
+    if (isCorrect) {
+      awardRound(player);
+    } else {
+      setImageGuessInput("");
+      missImageGuess();
+    }
   };
 
   const peekCelebCard = () => {
@@ -1483,12 +1957,6 @@ export default function FiveToFlipPrototype() {
   };
 
   const hideCelebCard = () => {
-    setShowCelebPeek(false);
-  };
-
-  const redrawCelebCard = () => {
-    if (showSolvedBoard) return;
-    setCurrentCeleb((prev) => drawRandomCeleb(prev?.name));
     setShowCelebPeek(false);
   };
 
@@ -1516,9 +1984,26 @@ export default function FiveToFlipPrototype() {
   return (
     <>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap'); html, body, #root { margin: 0; min-height: 100%; } body { overflow-x: hidden; background: #f3f7f9; }`}</style>
-      <div className={`min-h-screen overflow-hidden text-[#173149] ${view === "library" ? "bg-transparent" : "bg-[linear-gradient(180deg,#f3f7f9_0%,#eaf1f4_100%)]"}`} style={view === "library" ? { backgroundImage: `url(${houseGuestAssets.gameRoomWall})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" } : undefined}>
-        <div className={`pointer-events-none absolute inset-0 ${view === "library" ? "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.20),transparent_26%),radial-gradient(circle_at_left,rgba(250,219,78,0.06),transparent_30%),radial-gradient(circle_at_right,rgba(157,204,226,0.06),transparent_32%)]" : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.94),transparent_26%),radial-gradient(circle_at_left,rgba(250,219,78,0.10),transparent_30%),radial-gradient(circle_at_right,rgba(157,204,226,0.10),transparent_32%)]"}`} />
-        <div className={`pointer-events-none absolute -top-16 left-1/2 h-[24rem] w-[64rem] -translate-x-1/2 rounded-full blur-3xl ${view === "library" ? "bg-white/12" : "bg-white/45"}`} />
+      <div
+        className={`min-h-screen overflow-hidden text-[#173149] ${
+          view === "library"
+            ? "bg-transparent"
+            : view === "game"
+              ? "bg-[linear-gradient(180deg,#f7efe4_0%,#efe5d7_42%,#e7dccf_100%)]"
+              : "bg-[linear-gradient(180deg,#f3f7f9_0%,#eaf1f4_100%)]"
+        }`}
+        style={view === "library" ? { backgroundImage: `url(${houseGuestAssets.gameRoomWall})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" } : undefined}
+      >
+        <div className={`pointer-events-none absolute inset-0 ${view === "library" ? "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.20),transparent_26%),radial-gradient(circle_at_left,rgba(250,219,78,0.06),transparent_30%),radial-gradient(circle_at_right,rgba(157,204,226,0.06),transparent_32%)]" : view === "game" ? "bg-[radial-gradient(circle_at_top,rgba(255,208,128,0.22),transparent_24%),radial-gradient(circle_at_center,rgba(104,57,28,0.08),transparent_48%),radial-gradient(circle_at_bottom,rgba(86,48,26,0.10),transparent_36%)]" : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.94),transparent_26%),radial-gradient(circle_at_left,rgba(250,219,78,0.10),transparent_30%),radial-gradient(circle_at_right,rgba(157,204,226,0.10),transparent_32%)]"}`} />
+        {view === "game" ? (
+          <>
+            <div className="pointer-events-none absolute inset-x-[10%] top-[10rem] h-[28rem] rounded-full bg-[rgba(255,192,110,0.18)] blur-3xl" />
+            <div className="pointer-events-none absolute left-[-8%] top-[26%] h-[26rem] w-[26rem] rounded-full bg-[rgba(102,55,29,0.10)] blur-3xl" />
+            <div className="pointer-events-none absolute right-[-6%] top-[18%] h-[22rem] w-[22rem] rounded-full bg-[rgba(126,65,33,0.08)] blur-3xl" />
+          </>
+        ) : (
+          <div className={`pointer-events-none absolute -top-16 left-1/2 h-[24rem] w-[64rem] -translate-x-1/2 rounded-full blur-3xl ${view === "library" ? "bg-white/12" : "bg-white/45"}`} />
+        )}
 
         <div className="relative mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
           {view === "arrival" ? (
@@ -1548,7 +2033,6 @@ export default function FiveToFlipPrototype() {
           {view === "library" ? (
             <div className="space-y-6 p-0">
               <div className="relative flex items-center justify-between overflow-hidden rounded-[1.6rem] px-3 py-3">
-                {/* greenery header background (top crop, no stretch) */}
                 <img
                   src={houseGuestAssets.greenery}
                   alt=""
@@ -1586,132 +2070,196 @@ export default function FiveToFlipPrototype() {
           ) : null}
 
           {view === "game" ? (
-            <>
-              <div className="mb-6 flex items-center justify-between rounded-[1.8rem] border border-[#3c3428]/10 bg-white/70 px-5 py-4 shadow backdrop-blur">
+            <div className={`transition-opacity duration-300 ${gamePageMounted ? "opacity-100" : "opacity-0"}`}>
+              <div className="mb-6 flex items-center justify-between rounded-[1.8rem] border border-[#c9b39a]/55 bg-[linear-gradient(180deg,rgba(255,250,244,0.86)_0%,rgba(247,239,228,0.82)_100%)] px-5 py-4 shadow-[0_12px_28px_rgba(80,48,25,0.08)] backdrop-blur">
                 <div>
                   <BrandWordmark srcOverride={houseGuestAssets.brandLockupGamesHorizontal} className="h-8" />
-                  <div className="mt-1 text-3xl" style={roundedDisplay}>Five to Flip</div>
+                  <div className="mt-1 text-3xl text-[#362116]" style={roundedDisplay}>Five to Flip</div>
                 </div>
-                <button onClick={() => setView("library")} className="rounded-full border px-4 py-2 text-xs">back</button>
+                <button
+                  type="button"
+                  onClick={() => setView("library")}
+                  className="rounded-full border border-[#c7ab87] bg-[rgba(255,245,230,0.88)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#6e4423] shadow-[0_6px_16px_rgba(80,48,25,0.06)]"
+                  style={cleanSans}
+                >
+                  back
+                </button>
               </div>
 
-              <div className="grid gap-6 xl:grid-cols-[0.9fr,1.4fr,0.9fr] items-start">
-                <div className="relative rounded-[2.4rem] bg-[#0b0f13] p-[10px] shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
-                  <div className="absolute top-[6px] left-1/2 -translate-x-1/2 h-[6px] w-[60px] rounded-full bg-black/60" />
-                  <div className="rounded-[2rem] border border-black/60 bg-[#0f1419] text-white p-4">
-                    <div className="text-xs uppercase opacity-60">Player A Device</div>
-                    <div className="mt-4 text-sm">{holder === "A" ? "Celeb Holder" : playerAIsActionDevice ? "Action Device" : "Waiting"}</div>
+              <div className="flex flex-col gap-8 items-center">
+                <div className="w-full max-w-3xl rounded-[1.9rem] border border-[#d8dde3] bg-[linear-gradient(180deg,#f7f8fa_0%,#edf1f4_100%)] p-4 shadow-[0_18px_40px_rgba(15,23,32,0.08)]">
+                  <div className="rounded-[1.45rem] border border-[#dce2e8] bg-[linear-gradient(180deg,#ffffff_0%,#f6f8fa_100%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+                    <div className="relative rounded-[1.35rem] border border-[#4d3724] bg-[radial-gradient(circle_at_top,rgba(255,208,128,0.10),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.18)]">
+                      <button
+                        type="button"
+                        onClick={() => setShowRules(true)}
+                        className="absolute right-5 top-5 rounded-full border border-[#8b6642] bg-[rgba(255,248,238,0.08)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f2d49a] shadow-[0_8px_18px_rgba(0,0,0,0.18)] transition hover:bg-[rgba(255,248,238,0.12)]"
+                        style={cleanSans}
+                      >
+                        rules
+                      </button>
 
-                    <div className="mt-4 space-y-3">
-                      {holder === "A" ? (
-                        <>
-                          <button onClick={peekCelebCard} className="w-full rounded-lg bg-[#fadb4e] text-black py-2">Show Celeb</button>
-                          <button onClick={hideCelebCard} className="w-full rounded-lg border py-2">Hide</button>
-                          <button onClick={redrawCelebCard} className="w-full rounded-lg border py-2">New Celeb</button>
-                        </>
-                      ) : null}
+                      <div className="text-center">
+                        <GamePageMarqueeTitle>Five to Flip</GamePageMarqueeTitle>
 
-                      {isImageGuessPhase ? (
-                        imageGuessWindow === "A" ? (
-                          <>
-                            <button onClick={() => imageGuessWindow && awardRound(imageGuessWindow)} className="w-full rounded-lg bg-[#F3A33A] py-2">Image Correct</button>
-                            <button onClick={missImageGuess} className="w-full rounded-lg border py-2">Miss</button>
-                          </>
-                        ) : (
-                          <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
-                            Waiting for the other device to make the image call.
+                        <div className="mt-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9b476]/76" style={cleanSans}>
+                          questions used
+                        </div>
+                        <div className="mt-2 flex justify-center gap-2.5">
+                          {questionDots.map((step) => {
+                            const active = questionsUsed >= step;
+                            return (
+                              <div
+                                key={step}
+                                className={`flex h-9 w-9 items-center justify-center rounded-full border text-sm font-bold transition ${active ? "border-[#efc26a] bg-[#efc26a]/18 text-[#f5d79b] shadow-[0_0_16px_rgba(239,194,106,0.18)]" : "border-white/18 bg-white/6 text-white/60"}`}
+                                style={cleanSans}
+                              >
+                                {step}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="mt-5 text-[clamp(1rem,2.2vw,1.6rem)] font-black uppercase tracking-[0.03em] text-[#f7d899]" style={cleanSans}>
+                          {boardPrompt}
+                        </div>
+                        {boardSubPrompt ? (
+                          <div className="mt-2 text-sm text-white/70" style={cleanSans}>
+                            {boardSubPrompt}
                           </div>
-                        )
-                      ) : activePlayer === "B" ? (
-                        <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
-                          Receive the question here and judge whether the celeb guess is right.
+                        ) : null}
+                      </div>
+
+                      <div className="mt-6">
+                        <GamePageRevealPanel
+                          rows={boardSize}
+                          cols={boardSize}
+                          revealed={showSolvedBoard ? Array.from({ length: tileCount }, (_, i) => i) : flipped}
+                          image={currentImage}
+                          aspectClass="aspect-square"
+                        />
+                      </div>
+
+                      <div className="mt-5 grid gap-3 md:grid-cols-3">
+                        <div className="rounded-[0.95rem] border border-white/10 bg-white/6 px-4 py-3 text-center">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#cba86b]" style={cleanSans}>holder</div>
+                          <div className="mt-1 text-lg text-[#f5ead7]" style={roundedDisplay}>Player {holder}</div>
                         </div>
-                      ) : (
-                        <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
-                          Waiting for Player B to ask the next question.
+                        <div className="rounded-[0.95rem] border border-white/10 bg-white/6 px-4 py-3 text-center">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#cba86b]" style={cleanSans}>round</div>
+                          <div className="mt-1 text-lg text-[#f5ead7]" style={roundedDisplay}>{round}</div>
                         </div>
-                      )}
+                        <div className="rounded-[0.95rem] border border-white/10 bg-white/6 px-4 py-3 text-center">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#cba86b]" style={cleanSans}>match</div>
+                          <div className="mt-1 text-lg text-[#f5ead7]" style={roundedDisplay}>{format === 1 ? "1 round" : `${format} rounds`}</div>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="mt-6 text-xs opacity-60">Score</div>
-                    <div className="text-3xl">{score.A}</div>
-                  </div>
-                </div>
-
-                <div className="rounded-[2rem] border bg-white p-4">
-                  <div className="mb-4 text-sm uppercase opacity-60">Board</div>
-
-                  <RevealPanel
-                    rows={boardSize}
-                    cols={boardSize}
-                    revealed={showSolvedBoard ? Array.from({ length: tileCount }, (_, i) => i) : flipped}
-                    aspectClass="aspect-square"
-                    slide={previewSlide}
-                  />
-
-                  <div className="mt-4 text-sm text-center opacity-70">{status}</div>
-                </div>
-
-                <div className="relative rounded-[2.4rem] bg-[#0b0f13] p-[10px] shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
-                  <div className="absolute top-[6px] left-1/2 -translate-x-1/2 h-[6px] w-[60px] rounded-full bg-black/60" />
-                  <div className="rounded-[2rem] border border-black/60 bg-[#0f1419] text-white p-4">
-                    <div className="text-xs uppercase opacity-60">Player B Device</div>
-                    <div className="mt-4 text-sm">{holder === "B" ? "Celeb Holder" : playerBIsActionDevice ? "Action Device" : "Waiting"}</div>
-
-                    <div className="mt-4 space-y-3">
-                      {holder === "B" ? (
-                        <>
-                          <button onClick={peekCelebCard} className="w-full rounded-lg bg-[#fadb4e] text-black py-2">Show Celeb</button>
-                          <button onClick={hideCelebCard} className="w-full rounded-lg border py-2">Hide</button>
-                          <button onClick={redrawCelebCard} className="w-full rounded-lg border py-2">New Celeb</button>
-                        </>
-                      ) : null}
-
-                      {isImageGuessPhase ? (
-                        imageGuessWindow === "B" ? (
-                          <>
-                            <button onClick={() => imageGuessWindow && awardRound(imageGuessWindow)} className="w-full rounded-lg bg-[#F3A33A] py-2">Image Correct</button>
-                            <button onClick={missImageGuess} className="w-full rounded-lg border py-2">Miss</button>
-                          </>
-                        ) : (
-                          <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
-                            Waiting for the other device to make the image call.
-                          </div>
-                        )
-                      ) : activePlayer === "B" ? (
-                        <>
-                          <button onClick={useQuestion} className="w-full rounded-lg bg-[#93B437] py-2">Ask Question ({questionsUsed}/5)</button>
-                          <button onClick={onCorrectCelebGuess} className="w-full rounded-lg bg-[#fadb4e] text-black py-2">Celeb Guess Correct</button>
-                          <button onClick={onWrongCelebGuess} className="w-full rounded-lg border py-2">Celeb Guess Wrong</button>
-                        </>
-                      ) : (
-                        <div className="rounded-lg border border-white/15 px-3 py-3 text-sm text-white/70">
-                          Waiting for your turn to investigate and make the celeb call.
-                        </div>
-                      )}
+                    <div className="mt-4 rounded-[1rem] border border-[#dfe5eb] bg-[#fbfcfd] px-4 py-3 text-[#465261]" style={cleanSans}>
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7b8896]">
+                        <div>phase: {phaseLabel}</div>
+                        <div>questions: {questionsUsed}/5</div>
+                      </div>
+                      <div className="mt-2 text-sm leading-6">
+                        {status}
+                      </div>
                     </div>
 
-                    <div className="mt-6 text-xs opacity-60">Score</div>
-                    <div className="text-3xl">{score.B}</div>
+                    <GamePageMatchFormatPicker format={format} onChange={resetMatch} />
                   </div>
                 </div>
-              </div>
-            </>
-          ) : null}
 
-          {showCelebPeek && currentCeleb ? (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2D2442]/70 p-4">
-              <div className="w-full max-w-xl rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-3 shadow-[0_20px_80px_rgba(0,0,0,0.25)]">
-                <div className="rounded-[1.6rem] border-2 border-[#2D2442] bg-white p-6 text-center">
-                  <div className="text-xs font-black uppercase tracking-[0.35em] text-[#75912B]">Private celeb card</div>
-                  <div className="mt-3 text-sm font-black uppercase tracking-[0.2em] text-[#4A4260]">Only player {holder} should look</div>
-                  <div className="mt-6 rounded-[1.6rem] border-2 border-[#2D2442] bg-[#FFF9DD] px-6 py-10 text-4xl font-black lowercase text-[#2D2442] sm:text-5xl" style={roundedDisplay}>{currentCeleb.name}</div>
-                  <div className="mt-6 flex justify-center gap-3">
-                    <button onClick={hideCelebCard} className="rounded-2xl border-2 border-[#2D2442] bg-[#93B437] px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:brightness-105">Hide card</button>
-                    <button onClick={redrawCelebCard} className="rounded-2xl border-2 border-[#2D2442] bg-white px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-[#2D2442] transition hover:bg-[#F8F1C8]">New celeb</button>
-                  </div>
+                <div className="flex w-full max-w-4xl justify-between gap-6">
+                  <GamePagePhoneShell tilt={-4} title="Player A Phone" subtitle={playerARole}>
+                    {holder === "A" ? (
+                      <>
+                        <GamePageActionButton variant="accent" onClick={peekCelebCard}>Show Celeb</GamePageActionButton>
+                        <GamePageActionButton variant="secondary" onClick={hideCelebCard}>Hide</GamePageActionButton>
+                        {showCelebPeek && currentCeleb ? <GamePageCelebPreviewCard name={currentCeleb.name} /> : null}
+                      </>
+                    ) : null}
+
+                    {isImageGuessPhase ? (
+                      imageGuessWindow === "A" ? (
+                        <>
+                          <GamePageSurfaceNote>
+                            You earned the image guess. Type the image answer here.
+                          </GamePageSurfaceNote>
+                          <GamePageTextInput
+                            value={imageGuessInput}
+                            onChange={setImageGuessInput}
+                            onSubmit={() => submitImageGuess("A")}
+                            placeholder="Type image answer"
+                          />
+                          <GamePageActionButton variant="primary" onClick={() => submitImageGuess("A")}>Submit Image Guess</GamePageActionButton>
+                        </>
+                      ) : (
+                        <GamePageSurfaceNote>
+                          The other phone has the image-guess input right now.
+                        </GamePageSurfaceNote>
+                      )
+                    ) : celebGuessPending ? (
+                      <>
+                        <GamePageSurfaceNote>
+                          You are the holder. Confirm whether the celeb guess is correct.
+                        </GamePageSurfaceNote>
+                        <GamePageActionButton variant="accent" onClick={onCorrectCelebGuess}>Confirm Correct</GamePageActionButton>
+                        <GamePageActionButton variant="secondary" onClick={onWrongCelebGuess}>Confirm Wrong</GamePageActionButton>
+                      </>
+                    ) : (
+                      <GamePageSurfaceNote>
+                        Listen to the questions, keep the celeb private, and confirm the spoken guess when it happens.
+                      </GamePageSurfaceNote>
+                    )}
+                  </GamePagePhoneShell>
+
+                  <GamePagePhoneShell tilt={4} title="Player B Phone" subtitle={playerBRole}>
+                    {holder === "B" ? (
+                      <>
+                        <GamePageActionButton variant="accent" onClick={peekCelebCard}>Show Celeb</GamePageActionButton>
+                        <GamePageActionButton variant="secondary" onClick={hideCelebCard}>Hide</GamePageActionButton>
+                        {showCelebPeek && currentCeleb ? <GamePageCelebPreviewCard name={currentCeleb.name} /> : null}
+                      </>
+                    ) : null}
+
+                    {isImageGuessPhase ? (
+                      imageGuessWindow === "B" ? (
+                        <>
+                          <GamePageSurfaceNote>
+                            You earned the image guess. Type the image answer here.
+                          </GamePageSurfaceNote>
+                          <GamePageTextInput
+                            value={imageGuessInput}
+                            onChange={setImageGuessInput}
+                            onSubmit={() => submitImageGuess("B")}
+                            placeholder="Type image answer"
+                          />
+                          <GamePageActionButton variant="primary" onClick={() => submitImageGuess("B")}>Submit Image Guess</GamePageActionButton>
+                        </>
+                      ) : (
+                        <GamePageSurfaceNote>
+                          The other phone has the image-guess input right now.
+                        </GamePageSurfaceNote>
+                      )
+                    ) : celebGuessPending ? (
+                      <GamePageSurfaceNote>
+                        Say your celeb guess out loud. The holder will confirm it from the other phone.
+                      </GamePageSurfaceNote>
+                    ) : (
+                      <>
+                        <GamePageSurfaceNote>
+                          Ask your questions out loud, track the count, and decide when you are ready to guess.
+                        </GamePageSurfaceNote>
+                        <GamePageActionButton variant="primary" onClick={useQuestion}>Ask Question ({questionsUsed}/5)</GamePageActionButton>
+                        <GamePageActionButton variant="accent" onClick={handleReadyToGuess}>Ready to Guess</GamePageActionButton>
+                      </>
+                    )}
+                  </GamePagePhoneShell>
                 </div>
               </div>
+
+              <GamePageRulesOverlay open={showRules} onClose={() => setShowRules(false)} format={format} />
             </div>
           ) : null}
         </div>
