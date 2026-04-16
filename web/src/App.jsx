@@ -659,8 +659,11 @@ function HeroReveal({ fill = false, playOnce = false, onComplete = null, layoutM
                         </div>
                       </div>
                     ) : (
-                      <GameImageBoardScene row={0} col={0} rows={1} cols={1} image={GAME_IMAGE_LIBRARY[0]} />
-                    )}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04)_0%,transparent_24%,transparent_62%,rgba(255,255,255,0.04)_62%,rgba(255,255,255,0.04)_70%,transparent_70%,transparent_100%)]" />
+          </div>
+        )}
                   </div>
 
                   <div
@@ -1071,16 +1074,23 @@ function HouseGamePreviewArt({ id }) {
         };
 
   return (
-    <div className="absolute inset-0 overflow-hidden rounded-[2rem]">
+    <div className="absolute inset-0 overflow-hidden rounded-[2rem] bg-[#09131d]">
+      <img
+        src={config.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover scale-[1.08] blur-[18px] opacity-70"
+        style={{ objectPosition: config.objectPosition }}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,24,0.14)_0%,rgba(7,16,24,0.10)_22%,rgba(7,16,24,0.28)_56%,rgba(7,16,24,0.86)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_22%)]" />
       <img
         src={config.src}
         alt={config.alt}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-[3.5%] h-[93%] w-[93%] object-contain drop-shadow-[0_18px_34px_rgba(0,0,0,0.24)]"
         style={{ objectPosition: config.objectPosition }}
       />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,24,0.10)_0%,rgba(7,16,24,0.08)_24%,rgba(7,16,24,0.24)_50%,rgba(7,16,24,0.84)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_22%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-[44%] bg-[linear-gradient(180deg,transparent_0%,rgba(7,16,24,0.16)_18%,rgba(7,16,24,0.88)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-[44%] bg-[linear-gradient(180deg,transparent_0%,rgba(7,16,24,0.12)_18%,rgba(7,16,24,0.88)_100%)]" />
       <div
         className="absolute left-1/2 top-[-8%] h-32 w-40 -translate-x-1/2 rounded-full blur-3xl"
         style={{ backgroundColor: config.accentGlow }}
@@ -1654,17 +1664,13 @@ function normalizeGameImageGuess(value) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "");
 }
 
-function GameImageBoardScene({ row, col, rows, cols, image }) {
+function GameImageBoardScene({ image }) {
   if (image?.kind === "title-board") {
     return (
       <div className="relative h-full w-full overflow-hidden rounded-[0.78rem] bg-[#17110d]">
         <div
-          className="absolute"
+          className="absolute inset-0"
           style={{
-            width: `${cols * 100}%`,
-            height: `${rows * 100}%`,
-            left: `-${col * 100}%`,
-            top: `-${row * 100}%`,
             background:
               "radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%), linear-gradient(180deg,#2a1f18_0%,#17110e_100%)",
           }}
@@ -1690,22 +1696,12 @@ function GameImageBoardScene({ row, col, rows, cols, image }) {
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-[0.78rem] bg-[#17110d]">
-      <div
-        className="absolute"
-        style={{
-          width: `${cols * 100}%`,
-          height: `${rows * 100}%`,
-          left: `-${col * 100}%`,
-          top: `-${row * 100}%`,
-          backgroundImage: `url("${imageSrc}")`,
-          backgroundSize: `${cols * 100}% ${rows * 100}%`,
-          backgroundPosition: `${(col / Math.max(cols - 1, 1)) * 100}% ${(row / Math.max(rows - 1, 1)) * 100}%`,
-          backgroundRepeat: "no-repeat",
-          backgroundColor: "#17110d",
-        }}
-      >
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02)_0%,rgba(0,0,0,0.10)_100%)]" />
-      </div>
+      <img
+        src={imageSrc}
+        alt={image.label || "Hidden object"}
+        className="absolute inset-0 h-full w-full object-cover"
+        draggable="false"
+      />
     </div>
   );
 }
@@ -1718,6 +1714,10 @@ function GamePageRevealPanel({ rows, cols, revealed, image, aspectClass = "aspec
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
       <div className="absolute inset-[10px] rounded-[1rem] border border-white/5 bg-[linear-gradient(180deg,#231a15_0%,#15100d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]" />
 
+      <div className="absolute inset-[18px] overflow-hidden rounded-[0.95rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]">
+        <GameImageBoardScene image={image} />
+      </div>
+
       <div
         className="absolute inset-[18px] grid gap-[8px]"
         style={{
@@ -1727,8 +1727,6 @@ function GamePageRevealPanel({ rows, cols, revealed, image, aspectClass = "aspec
       >
         {Array.from({ length: total }, (_, index) => {
           const isRevealed = revealed.includes(index);
-          const row = Math.floor(index / cols);
-          const col = index % cols;
 
           return (
             <div key={index} className="[perspective:1200px]">
@@ -1737,10 +1735,11 @@ function GamePageRevealPanel({ rows, cols, revealed, image, aspectClass = "aspec
                 style={{
                   transformStyle: "preserve-3d",
                   transform: isRevealed ? "rotateY(180deg)" : "rotateY(0deg)",
-                  transitionProperty: "transform",
-                  transitionDuration: "900ms",
-                  transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
-                  transitionDelay: `${index * tileDelay}ms`,
+                  transitionProperty: "transform, opacity",
+                  transitionDuration: "900ms, 240ms",
+                  transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1), ease",
+                  transitionDelay: `${index * tileDelay}ms, ${isRevealed ? index * tileDelay + 700 : 0}ms`,
+                  opacity: isRevealed ? 0 : 1,
                 }}
               >
                 <div
@@ -1761,11 +1760,9 @@ function GamePageRevealPanel({ rows, cols, revealed, image, aspectClass = "aspec
                 </div>
 
                 <div
-                  className="absolute inset-0 overflow-hidden rounded-[0.82rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]"
+                  className="absolute inset-0 rounded-[0.82rem]"
                   style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-                >
-                  <GameImageBoardScene row={row} col={col} rows={rows} cols={cols} image={image} />
-                </div>
+                />
               </div>
             </div>
           );
@@ -2480,12 +2477,26 @@ export default function FiveToFlipPrototype() {
                         </GamePageSurfaceNote>
                       )
                     ) : celebGuessPending ? (
+                      holder === "A" ? (
+                        <>
+                          <GamePageSurfaceNote>
+                            You are the holder. Confirm whether the celeb guess is correct.
+                          </GamePageSurfaceNote>
+                          <GamePageActionButton variant="accent" onClick={onCorrectCelebGuess}>Confirm Correct</GamePageActionButton>
+                          <GamePageActionButton variant="secondary" onClick={onWrongCelebGuess}>Confirm Wrong</GamePageActionButton>
+                        </>
+                      ) : (
+                        <GamePageSurfaceNote>
+                          You are the guesser. Say your celeb guess out loud and wait for the holder to confirm it from the other phone.
+                        </GamePageSurfaceNote>
+                      )
+                    ) : activePlayer === "A" ? (
                       <>
                         <GamePageSurfaceNote>
-                          You are the holder. Confirm whether the celeb guess is correct.
+                          Ask your questions out loud, track the count, and decide when you are ready to guess.
                         </GamePageSurfaceNote>
-                        <GamePageActionButton variant="accent" onClick={onCorrectCelebGuess}>Confirm Correct</GamePageActionButton>
-                        <GamePageActionButton variant="secondary" onClick={onWrongCelebGuess}>Confirm Wrong</GamePageActionButton>
+                        <GamePageActionButton variant="primary" onClick={useQuestion}>Ask Question ({questionsUsed}/5)</GamePageActionButton>
+                        <GamePageActionButton variant="accent" onClick={handleReadyToGuess}>Ready to Guess</GamePageActionButton>
                       </>
                     ) : (
                       <GamePageSurfaceNote>
@@ -2523,10 +2534,20 @@ export default function FiveToFlipPrototype() {
                         </GamePageSurfaceNote>
                       )
                     ) : celebGuessPending ? (
-                      <GamePageSurfaceNote>
-                        Say your celeb guess out loud. The holder will confirm it from the other phone.
-                      </GamePageSurfaceNote>
-                    ) : (
+                      holder === "B" ? (
+                        <>
+                          <GamePageSurfaceNote>
+                            You are the holder. Confirm whether the celeb guess is correct.
+                          </GamePageSurfaceNote>
+                          <GamePageActionButton variant="accent" onClick={onCorrectCelebGuess}>Confirm Correct</GamePageActionButton>
+                          <GamePageActionButton variant="secondary" onClick={onWrongCelebGuess}>Confirm Wrong</GamePageActionButton>
+                        </>
+                      ) : (
+                        <GamePageSurfaceNote>
+                          You are the guesser. Say your celeb guess out loud and wait for the holder to confirm it from the other phone.
+                        </GamePageSurfaceNote>
+                      )
+                    ) : activePlayer === "B" ? (
                       <>
                         <GamePageSurfaceNote>
                           Ask your questions out loud, track the count, and decide when you are ready to guess.
@@ -2534,6 +2555,10 @@ export default function FiveToFlipPrototype() {
                         <GamePageActionButton variant="primary" onClick={useQuestion}>Ask Question ({questionsUsed}/5)</GamePageActionButton>
                         <GamePageActionButton variant="accent" onClick={handleReadyToGuess}>Ready to Guess</GamePageActionButton>
                       </>
+                    ) : (
+                      <GamePageSurfaceNote>
+                        Listen to the questions, keep the celeb private, and confirm the spoken guess when it happens.
+                      </GamePageSurfaceNote>
                     )}
                   </GamePagePhoneShell>
                 </div>
