@@ -831,7 +831,10 @@ function HeroRevealSubhero({ playOnce = false, onComplete = null }) {
             </div>
           </div>
         ) : (
-          <GameImageBoardScene row={0} col={0} rows={1} cols={1} image={GAME_IMAGE_LIBRARY[0]} />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04)_0%,transparent_24%,transparent_62%,rgba(255,255,255,0.04)_62%,rgba(255,255,255,0.04)_70%,transparent_70%,transparent_100%)]" />
+          </div>
         )}
       </div>
 
@@ -1119,14 +1122,14 @@ function GamesBridgeSection({ onEnter }) {
     },
     {
       id: "take-it-to-the-stage",
-      step: "02 · from the house",
+      step: "02 · concept preview",
       title: "Take It to the Stage",
       body: "Answer trivia, earn the roll, survive mic check.",
       accent: "rose",
     },
     {
       id: "sing-down-to-link-up",
-      step: "03 · from the house",
+      step: "03 · concept preview",
       title: "Sing Down to Link Up",
       body: "Sing the prompt, buzz in, then solve the linked board.",
       accent: "blue",
@@ -1706,6 +1709,32 @@ function GameImageBoardScene({ image }) {
   );
 }
 
+function GameImageRevealWindow({ image, row, col, rows, cols }) {
+  const imageSrc = gameImagePath(image.filename);
+
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-[0.82rem] bg-[#18120f]">
+      <div
+        className="absolute"
+        style={{
+          width: `${cols * 100}%`,
+          height: `${rows * 100}%`,
+          left: `-${col * 100}%`,
+          top: `-${row * 100}%`,
+        }}
+      >
+        <img
+          src={imageSrc}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+          draggable="false"
+        />
+      </div>
+    </div>
+  );
+}
+
 function GamePageRevealPanel({ rows, cols, revealed, image, aspectClass = "aspect-square", tileDelay = 0 }) {
   const total = rows * cols;
 
@@ -1714,8 +1743,26 @@ function GamePageRevealPanel({ rows, cols, revealed, image, aspectClass = "aspec
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
       <div className="absolute inset-[10px] rounded-[1rem] border border-white/5 bg-[linear-gradient(180deg,#231a15_0%,#15100d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]" />
 
-      <div className="absolute inset-[18px] overflow-hidden rounded-[0.95rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]">
-        <GameImageBoardScene image={image} />
+      <div className="absolute inset-[18px] overflow-hidden rounded-[0.95rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]" />
+
+      <div
+        className="absolute inset-[18px] grid gap-[8px]"
+        style={{
+          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+        }}
+      >
+        {Array.from({ length: total }, (_, index) => {
+          const isRevealed = revealed.includes(index);
+          const row = Math.floor(index / cols);
+          const col = index % cols;
+
+          return (
+            <div key={`window-${index}`} className="relative">
+              {isRevealed ? <GameImageRevealWindow image={image} row={row} col={col} rows={rows} cols={cols} /> : null}
+            </div>
+          );
+        })}
       </div>
 
       <div
@@ -1729,7 +1776,7 @@ function GamePageRevealPanel({ rows, cols, revealed, image, aspectClass = "aspec
           const isRevealed = revealed.includes(index);
 
           return (
-            <div key={index} className="[perspective:1200px]">
+            <div key={`tile-${index}`} className="[perspective:1200px]">
               <div
                 className="relative h-full w-full"
                 style={{
