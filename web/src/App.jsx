@@ -44,18 +44,14 @@ const houseGuestAssets = {
   tvStand: assetPath("tvstand.png"),
   gameRoomWall: assetPath("Game room background.png"),
   heroVideo: assetPath("House Guest intro vid.mp4"),
-  arrivalFallback: assetPath("scott front door.png"),
   tvRoom: assetPath("Screenshot 2026-04-11 194025.png"),
-  pool: assetPath("Pool Shot.png"),
   greenery: assetPath("Greenery Shot.png"),
-  backyardTree: assetPath("backyard tree.png"),
   emptySeat: assetPath("Empty guest seat.png"),
   guestDoor: assetPath("scott.png"),
   scottPortrait: assetPath("scott.jpeg"),
   guestRaincoat: assetPath("scott raincoat.webp"),
   guestGrill: assetPath("scottearlgrill.webp"),
   brandLockup: assetPath("house-guest-lockup-removebg-preview.png"),
-  brandLockupHorizontal: assetPath("House Guest hori.png"),
   brandLockupGamesHorizontal: assetPath("House Guest games less blank space.png"),
   takeItToTheStagePreview: assetPath("Take it to the stage.png"),
   singDownToLinkUpPreview: assetPath("Sing Down to Link up.png"),
@@ -289,68 +285,6 @@ function buildSporadicHeroMoments(total) {
   });
 }
 
-function SlideGraphic({ slide, hero = false, tile = false }) {
-  if (slide.graphic === "hotcomb") {
-    const size = tile ? "h-14 w-14 sm:h-16 sm:w-16" : hero ? "h-40 w-40 sm:h-48 sm:w-48" : "h-32 w-32 sm:h-40 sm:w-40";
-    return (
-      <div className={`relative ${size}`}>
-        <div className="absolute left-[18%] top-[10%] h-[78%] w-[16%] rounded-full border-2 border-[#2D2442] bg-[#2D2442]" />
-        <div className="absolute left-[34%] top-[18%] h-[10%] w-[42%] rounded-full border-2 border-[#2D2442] bg-[#2D2442]" />
-        <div className="absolute left-[36%] top-[30%] h-[48%] w-[36%] rounded-t-xl border-2 border-[#2D2442] bg-[#2D2442]" />
-        {Array.from({ length: 8 }, (_, i) => (
-          <div
-            key={i}
-            className="absolute bottom-[8%] w-[3.5%] rounded-b-full bg-[#2D2442]"
-            style={{ left: `${38 + i * 4.2}%`, height: `${24 + (i % 2 === 0 ? 2 : 0)}%` }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  const size = hero ? "text-7xl sm:text-8xl md:text-9xl" : tile ? "text-3xl sm:text-4xl" : "text-6xl sm:text-7xl md:text-8xl";
-  return <div className={`${size} drop-shadow-[0_4px_0_rgba(45,36,66,0.18)]`}>{slide.emoji}</div>;
-}
-
-function SceneArt({ slide, hero = false }) {
-  if (slide.kind === "title") {
-    return (
-      <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#E5D268] p-6 text-center text-[#2D2442]">
-        <div className="absolute -top-8 left-8 h-24 w-24 rounded-full bg-white/40 blur-2xl" />
-        <div className="absolute bottom-0 right-0 h-36 w-36 rounded-full bg-[#93B437]/25 blur-2xl" />
-        <div className="absolute inset-x-0 top-5 flex justify-center gap-2">
-          {Array.from({ length: 8 }, (_, i) => (
-            <span key={i} className={`h-3 w-3 rounded-full border border-[#2D2442] ${i % 2 === 0 ? "bg-[#F3A33A]" : "bg-[#93B437]"}`} />
-          ))}
-        </div>
-        <div className="relative z-10">
-          <div className="text-xs font-black uppercase tracking-[0.35em] text-[#75912B]">game room</div>
-          <div className={`mt-4 font-black lowercase leading-[0.88] text-[#2D2442] ${hero ? "text-5xl sm:text-6xl md:text-7xl" : "text-4xl sm:text-5xl md:text-6xl"}`} style={roundedDisplay}>
-            House Guest Games
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative h-full w-full overflow-hidden" style={{ background: slide.bg }}>
-      <div className="absolute -left-10 top-6 h-28 w-28 rounded-full opacity-80" style={{ backgroundColor: slide.blob }} />
-      <div className="absolute -right-6 bottom-5 h-24 w-24 rounded-full opacity-75" style={{ backgroundColor: slide.blob }} />
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-white/20" />
-      <div className="relative flex h-full w-full flex-col items-center justify-center gap-3 p-5 text-center text-white">
-        <SlideGraphic slide={slide} hero={hero} />
-        <div className="rounded-full border-2 border-[#2D2442] bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#2D2442] sm:text-xs">
-          {slide.subtitle}
-        </div>
-        <div className="text-2xl font-black lowercase text-[#2D2442] sm:text-3xl" style={roundedDisplay}>
-          {slide.title}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function HeroTileArt({ slide }) {
   return (
     <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-[0.8rem] p-3 text-center" style={{ background: slide.bg }}>
@@ -360,151 +294,6 @@ function HeroTileArt({ slide }) {
         <div className="rounded-full border-2 border-[#2D2442] bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#2D2442] sm:text-xs">
           {slide.subtitle}
         </div>
-      </div>
-    </div>
-  );
-}
-
-function HotCombBoardScene({ row, col, rows, cols }) {
-  return (
-    <div className="relative h-full w-full overflow-hidden rounded-[0.72rem] bg-[#efe4cc]">
-      <div
-        className="absolute"
-        style={{
-          width: `${cols * 100}%`,
-          height: `${rows * 100}%`,
-          left: `-${col * 100}%`,
-          top: `-${row * 100}%`,
-          background:
-            "radial-gradient(circle at 18% 18%, rgba(255,255,255,0.8), transparent 22%), linear-gradient(180deg, #f6eddc 0%, #e8dcc4 48%, #dccdb2 100%)",
-        }}
-      >
-        <div
-          className="absolute inset-0 opacity-70"
-          style={{
-            backgroundImage:
-              "linear-gradient(90deg, rgba(122,88,44,0.08) 0, rgba(122,88,44,0.08) 2px, transparent 2px, transparent 110px), linear-gradient(180deg, rgba(122,88,44,0.03) 0, rgba(122,88,44,0.03) 1px, transparent 1px, transparent 90px)",
-            backgroundSize: "120px 100%, 100% 96px",
-          }}
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.45),transparent_26%)]" />
-
-        <svg viewBox="0 0 1000 1000" className="absolute inset-0 h-full w-full">
-          <defs>
-            <linearGradient id="combBody" x1="0" x2="1">
-              <stop offset="0%" stopColor="#191919" />
-              <stop offset="40%" stopColor="#2c2c2c" />
-              <stop offset="70%" stopColor="#111111" />
-              <stop offset="100%" stopColor="#2e2e2e" />
-            </linearGradient>
-            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="10" dy="18" stdDeviation="14" floodColor="#4a3720" floodOpacity="0.28" />
-            </filter>
-          </defs>
-
-          <g transform="translate(500 510) rotate(-24)" filter="url(#softShadow)">
-            <ellipse cx="12" cy="250" rx="110" ry="330" fill="rgba(63,44,22,0.14)" />
-            <rect x="-55" y="-355" rx="54" ry="54" width="110" height="600" fill="url(#combBody)" />
-            <rect x="-18" y="-315" rx="9" ry="9" width="12" height="470" fill="rgba(255,255,255,0.18)" />
-            <rect x="88" y="-290" rx="30" ry="30" width="310" height="84" fill="url(#combBody)" />
-            <rect x="112" y="-268" rx="12" ry="12" width="232" height="14" fill="rgba(255,255,255,0.16)" />
-            <rect x="120" y="-212" rx="22" ry="22" width="240" height="430" fill="url(#combBody)" />
-            <rect x="142" y="-180" rx="10" ry="10" width="18" height="338" fill="rgba(255,255,255,0.14)" />
-            {Array.from({ length: 15 }, (_, i) => {
-              const x = 135 + i * 14.8;
-              const h = i % 2 === 0 ? 240 : 228;
-              return <rect key={i} x={x} y="198" width="7" height={h} rx="3.5" fill="#111111" />;
-            })}
-            <rect x="120" y="192" width="240" height="24" rx="12" fill="#131313" />
-            <path d="M120 214 C162 240, 318 240, 360 214" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="7" />
-          </g>
-        </svg>
-
-        <div className="absolute bottom-[6%] left-[6%] rounded-full bg-black/75 px-4 py-2 text-[clamp(12px,1.1vw,15px)] font-black uppercase tracking-[0.2em] text-white/90 shadow-[0_8px_18px_rgba(0,0,0,0.18)]">
-          hot comb
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BoardWindowArt({ slide, row, col, rows, cols }) {
-  if (slide.graphic === "hotcomb") {
-    return <HotCombBoardScene row={row} col={col} rows={rows} cols={cols} />;
-  }
-
-  return (
-    <div className="relative h-full w-full overflow-hidden rounded-[0.72rem] bg-white">
-      <div
-        className="absolute"
-        style={{
-          width: `${cols * 100}%`,
-          height: `${rows * 100}%`,
-          left: `-${col * 100}%`,
-          top: `-${row * 100}%`,
-          background: slide.bg,
-        }}
-      >
-        <div className="absolute -left-[10%] top-[8%] h-[24%] w-[24%] rounded-full opacity-80" style={{ backgroundColor: slide.blob }} />
-        <div className="absolute -right-[7%] bottom-[8%] h-[20%] w-[20%] rounded-full opacity-75" style={{ backgroundColor: slide.blob }} />
-        <div className="absolute bottom-0 left-0 right-0 h-[16%] bg-white/20" />
-        <div className="relative flex h-full w-full flex-col items-center justify-center gap-[3%] p-[6%] text-center text-white">
-          <SlideGraphic slide={slide} />
-          <div className="rounded-full border-2 border-[#2D2442] bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#2D2442] sm:text-xs">
-            {slide.subtitle}
-          </div>
-          <div className="text-[#2D2442]" style={{ ...roundedDisplay, fontSize: "clamp(1.35rem, 3vw, 2.4rem)" }}>
-            {slide.title}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function RevealPanel({ rows, cols, revealed, aspectClass = "aspect-[4/3]", coverClassName = "bg-[linear-gradient(180deg,#93B437_0%,#75912B_100%)]", slide, tileDelay = 0 }) {
-  const total = rows * cols;
-
-  return (
-    <div className={`relative overflow-hidden rounded-[1.5rem] border-2 border-[#2D2442] bg-white ${aspectClass}`}>
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#F7EFBF_0%,#FFF9DD_100%)]" />
-      <div
-        className="absolute inset-0 grid gap-[6px] p-[6px]"
-        style={{
-          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-        }}
-      >
-        {Array.from({ length: total }, (_, index) => {
-          const isRevealed = revealed.includes(index);
-          const row = Math.floor(index / cols);
-          const col = index % cols;
-
-          return (
-            <div key={index} className="[perspective:1200px]">
-              <div
-                className="relative h-full w-full"
-                style={{
-                  transformStyle: "preserve-3d",
-                  transform: isRevealed ? "rotateY(180deg)" : "rotateY(0deg)",
-                  transitionProperty: "transform",
-                  transitionDuration: "900ms",
-                  transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
-                  transitionDelay: `${index * tileDelay}ms`,
-                }}
-              >
-                <div className={`absolute inset-0 rounded-[0.85rem] border-2 border-[#2D2442] ${coverClassName}`} style={{ backfaceVisibility: "hidden", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.32)" }}>
-                  <div className="absolute inset-0 rounded-[0.72rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.24),transparent_42%)]" />
-                  <div className="absolute inset-0 rounded-[0.72rem] bg-[linear-gradient(135deg,transparent_0%,transparent_45%,rgba(246,228,109,0.22)_45%,rgba(246,228,109,0.22)_55%,transparent_55%,transparent_100%)]" />
-                </div>
-
-                <div className="absolute inset-0 overflow-hidden rounded-[0.85rem] border-2 border-[#2D2442] bg-white" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-                  {slide ? <BoardWindowArt slide={slide} row={row} col={col} rows={rows} cols={cols} /> : null}
-                </div>
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );
@@ -523,7 +312,10 @@ function HeroRevealQuestionDots({ count = 0 }) {
   );
 }
 
-function HeroReveal({ fill = false, playOnce = false, onComplete = null, layoutMode = "default" }) {
+// Main hero-reveal board used after the TV zoom transition.
+// This version is intentionally separate from the sub-hero preview so the
+// landing-card fit can evolve without risking the full transition state.
+function HeroReveal({ fill = false, playOnce = false, onComplete = null }) {
   const total = 16;
   const fullReveal = Array.from({ length: total }, (_, i) => i);
   const [phase, setPhase] = useState(0);
@@ -600,9 +392,7 @@ function HeroReveal({ fill = false, playOnce = false, onComplete = null, layoutM
       cancelled = true;
       clearTimers();
     };
-  }, [playOnce, onComplete, total]);
-
-  const isSubheroLayout = fill && layoutMode === "subhero";
+  }, [playOnce, onComplete]);
 
   const wrapperClass = fill
     ? "relative h-full w-full overflow-hidden rounded-[1.4rem] bg-[linear-gradient(180deg,#15100d_0%,#0f0b09_100%)]"
@@ -612,37 +402,23 @@ function HeroReveal({ fill = false, playOnce = false, onComplete = null, layoutM
     ? "relative h-full w-full overflow-hidden rounded-[1.4rem]"
     : "relative aspect-[16/9] overflow-hidden rounded-[1.35rem] border-2 border-[#2D2442]";
 
-  const framePaddingClass = isSubheroLayout ? "px-1 py-1 sm:px-1.5 sm:py-1.5" : "px-5 py-5 sm:px-6 sm:py-6";
-  const boardWrapClass = isSubheroLayout ? "relative w-full max-w-none" : "relative w-full max-w-[40rem]";
-  const boardScaleClass = isSubheroLayout ? "mx-auto w-full max-w-none" : "mx-auto w-full max-w-[36rem]";
-  const boardAspectClass = isSubheroLayout ? "aspect-[2.05/1]" : "aspect-[1.12/1]";
-  const chromeInsetClass = isSubheroLayout ? "inset-[6px]" : "inset-[10px]";
-  const boardInsetClass = isSubheroLayout ? "inset-[10px]" : "inset-[18px]";
-  const gridGapClass = isSubheroLayout ? "gap-[6px]" : "gap-[8px]";
-  const outerGlowClass = isSubheroLayout
-    ? "absolute inset-[1.2%] rounded-[1.5rem] bg-[radial-gradient(circle_at_top,rgba(255,210,138,0.12),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_30%)] blur-xl"
-    : fill
-      ? "absolute inset-0 rounded-[1.4rem] bg-[radial-gradient(circle_at_top,rgba(255,210,138,0.14),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.10),transparent_28%)] blur-xl"
-      : "absolute -inset-4 rounded-[2rem] bg-[radial-gradient(circle_at_top,rgba(255,210,138,0.14),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.10),transparent_28%)] blur-xl";
-  const boardFrameStyle = undefined;
-
   return (
     <div className={fill ? "relative h-full w-full overflow-hidden" : "relative mx-auto max-w-4xl"}>
-      <div className={outerGlowClass} />
+      <div className={`${fill ? "absolute inset-0 rounded-[1.4rem]" : "absolute -inset-4 rounded-[2rem]"} bg-[radial-gradient(circle_at_top,rgba(255,210,138,0.14),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.10),transparent_28%)] blur-xl`} />
 
       <div className={wrapperClass}>
         <div className={innerClass}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.10),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
 
-          <div className={`relative z-10 flex h-full items-center justify-center ${framePaddingClass}`}>
-            <div className={boardWrapClass}>
-              <div className={boardScaleClass}>
-                <div className={`relative overflow-hidden rounded-[1.35rem] border border-[#6f5436] bg-[linear-gradient(180deg,#2a1f18_0%,#17110e_100%)] shadow-[0_18px_40px_rgba(0,0,0,0.28)] ${boardAspectClass}`} style={boardFrameStyle}>
+          <div className="relative z-10 flex h-full items-center justify-center px-5 py-5 sm:px-6 sm:py-6">
+            <div className="relative w-full max-w-[40rem]">
+              <div className="mx-auto w-full max-w-[36rem]">
+                <div className="relative aspect-[1.12/1] overflow-hidden rounded-[1.35rem] border border-[#6f5436] bg-[linear-gradient(180deg,#2a1f18_0%,#17110e_100%)] shadow-[0_18px_40px_rgba(0,0,0,0.28)]">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
-                  <div className={`absolute ${chromeInsetClass} rounded-[1rem] border border-white/5 bg-[linear-gradient(180deg,#231a15_0%,#15100d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`} />
+                  <div className="absolute inset-[10px] rounded-[1rem] border border-white/5 bg-[linear-gradient(180deg,#231a15_0%,#15100d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]" />
 
-                  <div className={`absolute ${boardInsetClass} overflow-hidden rounded-[0.95rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]`}>
+                  <div className="absolute inset-[18px] overflow-hidden rounded-[0.95rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]">
                     {phase >= 5 ? (
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
@@ -659,15 +435,15 @@ function HeroReveal({ fill = false, playOnce = false, onComplete = null, layoutM
                         </div>
                       </div>
                     ) : (
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04)_0%,transparent_24%,transparent_62%,rgba(255,255,255,0.04)_62%,rgba(255,255,255,0.04)_70%,transparent_70%,transparent_100%)]" />
-          </div>
-        )}
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+                        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04)_0%,transparent_24%,transparent_62%,rgba(255,255,255,0.04)_62%,rgba(255,255,255,0.04)_70%,transparent_70%,transparent_100%)]" />
+                      </div>
+                    )}
                   </div>
 
                   <div
-                    className={`absolute ${boardInsetClass} grid ${gridGapClass}`}
+                    className="absolute inset-[18px] grid gap-[8px]"
                     style={{
                       gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
                       gridTemplateRows: "repeat(4, minmax(0, 1fr))",
@@ -675,6 +451,7 @@ function HeroReveal({ fill = false, playOnce = false, onComplete = null, layoutM
                   >
                     {Array.from({ length: total }, (_, index) => {
                       const isRevealed = revealed.includes(index);
+
                       return (
                         <div key={index} className="[perspective:1200px]">
                           <div
@@ -893,37 +670,49 @@ function HeroRevealSubhero({ playOnce = false, onComplete = null }) {
   );
 }
 
-function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }) {
+// Landing hero supports two prototype-review needs:
+// 1) a skippable intro overlay
+// 2) a manual auto-intro toggle so the page can be inspected without replaying the intro every time
+function LandingExperience({
+  onEnter,
+  introAlreadySeen = false,
+  onIntroDismiss,
+  introAutoplayEnabled = true,
+  onToggleIntro,
+}) {
   const videoRef = useRef(null);
   const [introExiting, setIntroExiting] = useState(false);
   const [introDismissed, setIntroDismissed] = useState(introAlreadySeen);
   const [videoReady, setVideoReady] = useState(false);
 
+  const finishIntroDismiss = (delay = 1100) => {
+    window.setTimeout(() => {
+      setIntroDismissed(true);
+      onIntroDismiss?.();
+    }, delay);
+  };
+
   const dismissIntro = () => {
     if (introExiting || introDismissed) return;
     setIntroExiting(true);
-    window.setTimeout(() => {
-      setIntroDismissed(true);
-      onIntroDismiss?.();
-    }, 1100);
-  };
-
-  const enterTVRoom = () => {
-    if (introExiting) return;
-    setIntroExiting(true);
-    window.setTimeout(() => {
-      setIntroDismissed(true);
-      onIntroDismiss?.();
-      onEnter();
-    }, 900);
+    finishIntroDismiss();
   };
 
   useEffect(() => {
     if (introAlreadySeen) {
       setIntroDismissed(true);
+      setIntroExiting(false);
       setVideoReady(false);
       return;
     }
+
+    setIntroDismissed(false);
+    setIntroExiting(false);
+    setVideoReady(false);
+  }, [introAlreadySeen]);
+
+  useEffect(() => {
+    if (introAlreadySeen) return;
 
     const video = videoRef.current;
     if (!video) return;
@@ -938,9 +727,7 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
 
     const handleEnded = () => {
       setIntroExiting(true);
-      window.setTimeout(() => {
-        setIntroDismissed(true);
-      }, 1100);
+      finishIntroDismiss();
     };
 
     applyPlaybackRate();
@@ -955,7 +742,7 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
       video.removeEventListener("canplay", handleCanPlay);
       video.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, [introAlreadySeen, onIntroDismiss]);
 
   return (
     <>
@@ -986,8 +773,25 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
           <div className={`absolute inset-0 bg-[#fadb4e] transition-all duration-700 ${introExiting ? "opacity-45 scale-[1.25]" : "opacity-0 scale-100"}`} />
 
           <div className="relative z-10 flex min-h-[100svh] flex-col justify-between px-6 py-6 md:px-10 md:py-8">
-            <div className="flex items-start justify-end">
-              <button onClick={dismissIntro} className="rounded-full border border-white/16 bg-black/18 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/88 backdrop-blur transition hover:bg-black/28" style={cleanSans}>
+            <div className="flex items-start justify-end gap-3">
+              <button
+                type="button"
+                onClick={onToggleIntro}
+                className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] backdrop-blur transition ${
+                  introAutoplayEnabled
+                    ? "border-[#fadb4e]/28 bg-[#fadb4e]/14 text-[#fff3b0] hover:bg-[#fadb4e]/20"
+                    : "border-white/16 bg-black/18 text-white/88 hover:bg-black/28"
+                }`}
+                style={cleanSans}
+              >
+                auto intro: {introAutoplayEnabled ? "on" : "off"}
+              </button>
+              <button
+                type="button"
+                onClick={dismissIntro}
+                className="rounded-full border border-white/16 bg-black/18 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/88 backdrop-blur transition hover:bg-black/28"
+                style={cleanSans}
+              >
                 skip intro
               </button>
             </div>
@@ -1003,6 +807,21 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
         <img src={houseGuestAssets.emptySeat} alt="An open seat at the House Guest table" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,24,0.34)_0%,rgba(7,16,24,0.18)_16%,rgba(7,16,24,0.36)_44%,rgba(7,16,24,0.58)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.08),transparent_22%),radial-gradient(circle_at_bottom,rgba(255,255,255,0.08),transparent_28%)]" />
+
+        <div className="absolute right-6 top-6 z-20">
+          <button
+            type="button"
+            onClick={onToggleIntro}
+            className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] backdrop-blur transition ${
+              introAutoplayEnabled
+                ? "border-[#fadb4e]/28 bg-[#fadb4e]/14 text-[#fff3b0] hover:bg-[#fadb4e]/20"
+                : "border-white/16 bg-black/18 text-white/88 hover:bg-black/28"
+            }`}
+            style={cleanSans}
+          >
+            auto intro: {introAutoplayEnabled ? "on" : "off"}
+          </button>
+        </div>
 
         <div className="relative z-10 flex min-h-[88vh] flex-col justify-between px-6 py-8 md:px-10 md:py-10">
           <div className="flex justify-start">
@@ -1606,28 +1425,6 @@ function TVZoomTransition({ game, onComplete }) {
   );
 }
 
-function MatchFormatCard({ format, resetMatch }) {
-  return (
-    <div className="rounded-[2rem] border-4 border-[#2D2442] bg-[#F8F1C8] p-4 shadow-[0_16px_0_#2D2442]">
-      <div className="rounded-[1.7rem] border-2 border-[#2D2442] bg-white p-4">
-        <div className="mb-3 text-xs font-bold uppercase tracking-[0.28em] text-[#75912B]">Match format</div>
-        <div className="grid grid-cols-3 gap-3">
-          {formats.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => resetMatch(item.id)}
-              className={`rounded-2xl border-2 px-4 py-4 text-left transition ${format === item.id ? "border-[#2D2442] bg-[#93B437] text-[#2D2442] shadow-[0_6px_0_#2D2442]" : "border-[#2D2442] bg-[#FFF9DD] text-[#2D2442] hover:bg-[#F6E46D]"}`}
-            >
-              <div className="text-sm font-black uppercase tracking-[0.08em]">{item.label}</div>
-              <div className="mt-1 text-xs text-[#4A4260]">{item.note}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function SiteNav({ activePage, onGoGamesHome, onGoWatchHouseGuest, onGoTVRoom }) {
   const baseClass = "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] transition";
 
@@ -1748,48 +1545,6 @@ function drawRandomGameImage(excludeId = null) {
 
 function normalizeGameImageGuess(value) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "");
-}
-
-function GameImageBoardScene({ image }) {
-  if (image?.kind === "title-board") {
-    return (
-      <div className="relative h-full w-full overflow-hidden rounded-[0.78rem] bg-[#17110d]">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%), linear-gradient(180deg,#2a1f18_0%,#17110e_100%)",
-          }}
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-[8%] text-center">
-            <div className="text-[clamp(8px,0.95vw,13px)] font-semibold uppercase tracking-[0.32em] text-[#d9b476]/78" style={cleanSans}>
-              house guest games
-            </div>
-            <div className="mt-[4%] text-[clamp(24px,6vw,72px)] leading-none text-[#fff1d5]" style={roundedDisplay}>
-              Five to Flip
-            </div>
-            <div className="mt-[3%] text-[clamp(8px,0.95vw,13px)] font-semibold uppercase tracking-[0.22em] text-[#f0d8ac]/78" style={cleanSans}>
-              guess · reveal · repeat
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const imageSrc = gameImagePath(image.filename);
-
-  return (
-    <div className="relative h-full w-full overflow-hidden rounded-[0.78rem] bg-[#17110d]">
-      <img
-        src={imageSrc}
-        alt={image.label || "Hidden object"}
-        className="absolute inset-0 h-full w-full object-cover"
-        draggable="false"
-      />
-    </div>
-  );
 }
 
 function GameImageRevealWindow({ image, row, col, rows, cols }) {
@@ -2098,6 +1853,7 @@ export default function FiveToFlipPrototype() {
   const [selectedGameIndex, setSelectedGameIndex] = useState(0);
   const [arrivalPage, setArrivalPage] = useState("games");
   const [hasSeenIntro, setHasSeenIntro] = useState(false);
+  const [introAutoplayEnabled, setIntroAutoplayEnabled] = useState(true);
   const [activePlayer, setActivePlayer] = useState("B");
   const [holder, setHolder] = useState("A");
   const [questionsUsed, setQuestionsUsed] = useState(0);
@@ -2426,8 +2182,10 @@ export default function FiveToFlipPrototype() {
                 <div className="space-y-6">
                   <LandingExperience
                     onEnter={() => setView("library")}
-                    introAlreadySeen={hasSeenIntro}
+                    introAlreadySeen={!introAutoplayEnabled || hasSeenIntro}
                     onIntroDismiss={() => setHasSeenIntro(true)}
+                    introAutoplayEnabled={introAutoplayEnabled}
+                    onToggleIntro={() => setIntroAutoplayEnabled((prev) => !prev)}
                   />
                   <GamesBridgeSection onEnter={() => setView("library")} />
                 </div>
