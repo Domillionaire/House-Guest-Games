@@ -112,23 +112,23 @@ const gameLibrary = [
     eyebrow: "guessing game",
     blurb: "Five questions. One celeb. A hidden image waiting on the screen.",
     accent: "from-[#dcc25f] via-[#d8b650] to-[#b98a34]",
-    status: "playable prototype",
+    status: "live now",
   },
   {
-    id: "table-talk",
-    title: "Table Talk",
-    eyebrow: "party deck",
-    blurb: "A hosted prompt game built for laughter, shade, and quick choices.",
-    accent: "from-[#7c9250] via-[#5f7441] to-[#39482d]",
-    status: "coming soon",
+    id: "take-it-to-the-stage",
+    title: "Take It to the Stage",
+    eyebrow: "concept preview",
+    blurb: "Answer trivia, earn the roll, survive mic check.",
+    accent: "from-[#f0cf66] via-[#cb9b3d] to-[#8b5d22]",
+    status: "concept preview",
   },
   {
-    id: "spot-the-vibe",
-    title: "Spot the Vibe",
-    eyebrow: "image game",
-    blurb: "Read the room, call the object, and trust what you know on sight.",
-    accent: "from-[#a66a47] via-[#8b573c] to-[#5c3928]",
-    status: "coming soon",
+    id: "sing-down-to-link-up",
+    title: "Sing Down to Link Up",
+    eyebrow: "concept preview",
+    blurb: "Sing the prompt, buzz in, then solve the linked board.",
+    accent: "from-[#5db4ff] via-[#3567d7] to-[#1d296f]",
+    status: "concept preview",
   },
 ];
 
@@ -1044,6 +1044,54 @@ function GamesBridgeSection({ onEnter }) {
   );
 }
 
+function TVRoomGameScreenArt({ game }) {
+  if (game.id === "five-to-flip") {
+    return (
+      <div className="absolute inset-0">
+        <HeroRevealSubhero />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,20,30,0.66)_0%,rgba(8,20,30,0.16)_42%,rgba(8,20,30,0.70)_100%)]" />
+      </div>
+    );
+  }
+
+  const config =
+    game.id === "take-it-to-the-stage"
+      ? {
+          src: houseGuestAssets.takeItToTheStagePreview,
+          objectPosition: "50% 46%",
+          accentGlow: "rgba(250,219,78,0.22)",
+        }
+      : {
+          src: houseGuestAssets.singDownToLinkUpPreview,
+          objectPosition: "50% 40%",
+          accentGlow: "rgba(96,165,250,0.22)",
+        };
+
+  return (
+    <div className="absolute inset-0 bg-[#09131d]">
+      <img
+        src={config.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover scale-[1.06] blur-[18px] opacity-72"
+        style={{ objectPosition: config.objectPosition }}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,24,0.18)_0%,rgba(7,16,24,0.10)_24%,rgba(7,16,24,0.26)_54%,rgba(7,16,24,0.88)_100%)]" />
+      <img
+        src={config.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-[4.5%] h-[91%] w-[91%] object-contain drop-shadow-[0_18px_34px_rgba(0,0,0,0.24)]"
+        style={{ objectPosition: config.objectPosition }}
+      />
+      <div
+        className="absolute left-1/2 top-[-10%] h-36 w-44 -translate-x-1/2 rounded-full blur-3xl"
+        style={{ backgroundColor: config.accentGlow }}
+      />
+    </div>
+  );
+}
+
 function WatchHouseGuestPage() {
   const [activeGuest, setActiveGuest] = useState(0);
 
@@ -1158,8 +1206,8 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
               <div className="relative z-20 mx-auto w-full max-w-4xl md:mb-[-0.6rem]">
                 <div className="relative rounded-none border-[2px] border-[#111417] bg-[#0f1419] p-[3px] shadow-[0_22px_60px_rgba(0,0,0,0.35)] md:rounded-none md:border-[3px]">
                   <div className="relative aspect-[16/9] overflow-hidden rounded-none bg-[#0b1620] shadow-[0_0_34px_rgba(250,219,78,0.16)] contrast-[1.08] brightness-[1.05]">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${game.accent} opacity-95`} />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_24%),linear-gradient(180deg,rgba(8,20,30,0.10)_0%,rgba(8,20,30,0.42)_100%)]" />
+                    <TVRoomGameScreenArt game={game} />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.10),transparent_24%),linear-gradient(180deg,rgba(8,20,30,0.04)_0%,rgba(8,20,30,0.30)_100%)]" />
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,transparent_16%,transparent_84%,rgba(0,0,0,0.16)_100%)]" />
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.05)_0%,transparent_8%,transparent_92%,rgba(255,255,255,0.05)_100%)]" />
 
@@ -1234,7 +1282,7 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
                 >
                   {item.title}
                   <span className={`ml-2 ${isActive ? "text-[#173149]/72" : "text-white/56"}`}>
-                    {playable ? "• live" : "• soon"}
+                    {playable ? "• live now" : "• concept preview"}
                   </span>
                 </button>
               );
