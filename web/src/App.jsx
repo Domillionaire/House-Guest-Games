@@ -1428,81 +1428,145 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
 }
 
 function TVZoomTransition({ game, onComplete }) {
+  const screenRef = useRef(null);
   const [active, setActive] = useState(false);
   const [phase, setPhase] = useState("zoom");
+  const [screenRects, setScreenRects] = useState(null);
 
   useEffect(() => {
-    const startTimer = window.setTimeout(() => setActive(true), 30);
-    const phaseTimer = window.setTimeout(() => setPhase("hero_reveal"), 1900);
+    let cancelled = false;
+    let frameA = 0;
+    let frameB = 0;
+
+    const measureScreen = () => {
+      if (!screenRef.current || cancelled) return;
+
+      const rect = screenRef.current.getBoundingClientRect();
+      const screenAspect = 16 / 9;
+      const viewportAspect = window.innerWidth / window.innerHeight;
+      const overscan = 1.32;
+
+      let coverWidth;
+      let coverHeight;
+
+      if (viewportAspect > screenAspect) {
+        coverWidth = window.innerWidth;
+        coverHeight = coverWidth / screenAspect;
+      } else {
+        coverHeight = window.innerHeight;
+        coverWidth = coverHeight * screenAspect;
+      }
+
+      const targetWidth = coverWidth * overscan;
+      const targetHeight = coverHeight * overscan;
+
+      setScreenRects({
+        start: {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        },
+        target: {
+          top: (window.innerHeight - targetHeight) / 2,
+          left: (window.innerWidth - targetWidth) / 2,
+          width: targetWidth,
+          height: targetHeight,
+        },
+      });
+    };
+
+    frameA = window.requestAnimationFrame(() => {
+      measureScreen();
+      frameB = window.requestAnimationFrame(() => {
+        if (!cancelled) setActive(true);
+      });
+    });
+
+    const handleResize = () => measureScreen();
+    window.addEventListener("resize", handleResize);
+
+    const phaseTimer = window.setTimeout(() => {
+      if (!cancelled) setPhase("hero_reveal");
+    }, 1850);
 
     return () => {
-      window.clearTimeout(startTimer);
+      cancelled = true;
+      window.cancelAnimationFrame(frameA);
+      window.cancelAnimationFrame(frameB);
+      window.removeEventListener("resize", handleResize);
       window.clearTimeout(phaseTimer);
     };
   }, []);
+
+  const renderScreenShell = (fill = false) => (
+    <div className={`relative ${fill ? "h-full w-full" : "w-full"} rounded-none border-[2px] border-[#111417] bg-[#0f1419] p-[3px] shadow-[0_22px_60px_rgba(0,0,0,0.35)] md:border-[3px]`}>
+      <div className={`relative ${fill ? "h-full w-full" : "aspect-[16/9]"} overflow-hidden rounded-none bg-[#0b1620] shadow-[0_0_34px_rgba(250,219,78,0.16)] contrast-[1.08] brightness-[1.05]`}>
+        <div className={`absolute inset-0 transition-transform duration-[1500ms] ease-[cubic-bezier(0.18,0.9,0.22,1)] ${fill && active ? "scale-[1.16]" : "scale-100"}`}>
+          <div className={`absolute inset-0 bg-gradient-to-br ${game?.accent || "from-[#dcc25f] via-[#d8b650] to-[#b98a34]"} opacity-95`} />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_24%),linear-gradient(180deg,rgba(8,20,30,0.10)_0%,rgba(8,20,30,0.42)_100%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,transparent_16%,transparent_84%,rgba(0,0,0,0.16)_100%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.05)_0%,transparent_8%,transparent_92%,rgba(255,255,255,0.05)_100%)]" />
+          <div className={`absolute inset-0 bg-black transition-opacity duration-[1100ms] ${active ? "opacity-100" : "opacity-0"}`} />
+
+          <div className="relative flex h-full flex-col justify-between p-4 text-white md:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="inline-flex rounded-full border border-white/16 bg-black/18 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/82 backdrop-blur" style={cleanSans}>
+                {game?.eyebrow || "guessing game"}
+              </div>
+              <div className="rounded-full border border-[#fadb4e]/40 bg-[#fadb4e]/16 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#fff3b0] backdrop-blur" style={cleanSans}>
+                entering game
+              </div>
+            </div>
+
+            <div className="max-w-[82%]">
+              <div className="text-4xl leading-[0.9] text-[#fadb4e] md:text-6xl" style={showDisplay}>{game?.title || "Five to Flip"}</div>
+              <p className="mt-3 max-w-xl text-sm leading-7 text-white/86 md:text-base" style={cleanSans}>
+                Step into the screen.
+              </p>
+            </div>
+
+            <div className="flex items-end justify-between gap-4">
+              <div className="h-[2px] w-20 bg-white/28" />
+              <div className="rounded-full border border-white/16 bg-white/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/82 backdrop-blur" style={cleanSans}>
+                loading room energy
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`pointer-events-none absolute inset-[-8%] transition-all duration-[1500ms] ease-[cubic-bezier(0.18,0.9,0.22,1)] ${fill && active ? "opacity-100 scale-[1.08]" : "opacity-0 scale-100"}`}>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_28%,rgba(7,16,24,0.14)_46%,rgba(7,16,24,0.42)_70%,rgba(7,16,24,0.92)_100%)]" />
+        </div>
+
+        <div className={`pointer-events-none absolute inset-0 transition-opacity duration-[900ms] ${fill && active ? "opacity-100" : "opacity-0"}`}>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_30%)]" />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 z-[90] overflow-hidden bg-[#09131d]">
       {phase === "zoom" ? (
         <>
+          <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${active ? "bg-black/68 opacity-100" : "bg-black/0 opacity-100"}`} />
           <div
-            className={`absolute inset-0 transition-all duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              active ? "bg-black/70 backdrop-blur-sm" : "bg-black/0"
-            }`}
-          />
-          <div
-            className={`absolute inset-0 bg-cover bg-center transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              active ? "scale-[1.08]" : "scale-100"
-            }`}
+            className={`absolute inset-0 bg-cover bg-center transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${active ? "scale-[1.03]" : "scale-100"}`}
             style={{ backgroundImage: `url(${houseGuestAssets.gameRoomWall})` }}
           />
 
           <div className="absolute inset-0 flex items-center justify-center px-4">
-            <div
-              className={`relative w-full max-w-5xl transition-all duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                active ? "scale-[2.65] opacity-100" : "scale-[0.82] opacity-96"
-              }`}
-            >
+            <div className="relative w-full max-w-5xl">
               <div className="absolute inset-x-[8%] bottom-[-2.2rem] h-10 rounded-full bg-black/36 blur-2xl md:bottom-[-2.6rem] md:h-12" />
 
               <div className="relative z-20 mx-auto w-full max-w-4xl md:mb-[-0.6rem]">
-                <div className="relative rounded-none border-[2px] border-[#111417] bg-[#0f1419] p-[3px] shadow-[0_22px_60px_rgba(0,0,0,0.35)] md:border-[3px]">
-                  <div className="relative aspect-[16/9] overflow-hidden rounded-none bg-[#0b1620] shadow-[0_0_34px_rgba(250,219,78,0.16)] contrast-[1.08] brightness-[1.05]">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${game?.accent || "from-[#dcc25f] via-[#d8b650] to-[#b98a34]"} opacity-95`} />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_24%),linear-gradient(180deg,rgba(8,20,30,0.10)_0%,rgba(8,20,30,0.42)_100%)]" />
-                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,transparent_16%,transparent_84%,rgba(0,0,0,0.16)_100%)]" />
-                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.05)_0%,transparent_8%,transparent_92%,rgba(255,255,255,0.05)_100%)]" />
-                    <div className={`absolute inset-0 bg-black transition-opacity duration-[1300ms] ${active ? "opacity-78" : "opacity-0"}`} />
-
-                    <div className="relative flex h-full flex-col justify-between p-4 text-white md:p-6">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="inline-flex rounded-full border border-white/16 bg-black/18 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/82 backdrop-blur" style={cleanSans}>
-                          {game?.eyebrow || "guessing game"}
-                        </div>
-                        <div className="rounded-full border border-[#fadb4e]/40 bg-[#fadb4e]/16 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#fff3b0] backdrop-blur" style={cleanSans}>
-                          entering game
-                        </div>
-                      </div>
-
-                      <div className="max-w-[82%]">
-                        <div className="text-4xl leading-[0.9] text-[#fadb4e] md:text-6xl" style={showDisplay}>{game?.title || "Five to Flip"}</div>
-                        <p className="mt-3 max-w-xl text-sm leading-7 text-white/86 md:text-base" style={cleanSans}>
-                          Step into the screen.
-                        </p>
-                      </div>
-
-                      <div className="flex items-end justify-between gap-4">
-                        <div className="h-[2px] w-20 bg-white/28" />
-                        <div className="rounded-full border border-white/16 bg-white/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/82 backdrop-blur" style={cleanSans}>
-                          loading room energy
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div ref={screenRef} className={`transition-opacity duration-[500ms] ease-out ${active && screenRects ? "opacity-0" : "opacity-100"}`}>
+                  {renderScreenShell(false)}
                 </div>
               </div>
 
-              <div className={`relative z-10 mx-auto mt-[-0.5rem] w-full max-w-5xl transition-all duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${active ? "opacity-0 scale-[1.08]" : "opacity-100 scale-100"}`}>
+              <div className={`relative z-10 mx-auto mt-[-0.5rem] w-full max-w-5xl transition-all duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${active ? "opacity-0 translate-y-5 scale-[0.98]" : "opacity-100 translate-y-0 scale-100"}`}>
                 <img
                   src={houseGuestAssets.tvStand}
                   alt=""
@@ -1513,6 +1577,25 @@ function TVZoomTransition({ game, onComplete }) {
               </div>
             </div>
           </div>
+
+          {screenRects ? (
+            <div
+              className="pointer-events-none fixed z-30 transform-gpu will-change-[top,left,width,height] transition-all duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+              style={active ? {
+                top: `${screenRects.target.top}px`,
+                left: `${screenRects.target.left}px`,
+                width: `${screenRects.target.width}px`,
+                height: `${screenRects.target.height}px`,
+              } : {
+                top: `${screenRects.start.top}px`,
+                left: `${screenRects.start.left}px`,
+                width: `${screenRects.start.width}px`,
+                height: `${screenRects.start.height}px`,
+              }}
+            >
+              {renderScreenShell(true)}
+            </div>
+          ) : null}
         </>
       ) : (
         <div className="absolute inset-0 bg-[#09131d]">
