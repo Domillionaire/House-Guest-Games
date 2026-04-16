@@ -57,21 +57,76 @@ const houseGuestAssets = {
   singDownToLinkUpPreview: assetPath("Sing Down to Link up.png"),
 };
 
-const guestMoments = [
+const watchHouseGuestMoments = [
   {
-    src: houseGuestAssets.guestDoor,
-    title: "Pulling up",
-    note: "The knock at the door, the welcome, and the start of the whole vibe.",
+    src: assetPath("youthumb-maxres-5Giy0s4b30Y.jpg"),
+    title: "Thumbnail 01",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
   },
   {
-    src: houseGuestAssets.guestRaincoat,
-    title: "Come through",
-    note: "Style, presence, and the kind of guest who changes the room the second they walk in.",
+    src: assetPath("youthumb-maxres-5dJT_1gWW_o.jpg"),
+    title: "Thumbnail 02",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
   },
   {
-    src: houseGuestAssets.guestGrill,
-    title: "Good company",
-    note: "Food, laughs, games, and the next neighbor waiting to pull up.",
+    src: assetPath("youthumb-maxres-ESlEgYGewjI.jpg"),
+    title: "Thumbnail 03",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-GdwPpODjSm0.jpg"),
+    title: "Thumbnail 04",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-IO5WhhkLoHA.jpg"),
+    title: "Thumbnail 05",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-KeWJIKPKNmk.jpg"),
+    title: "Thumbnail 06",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-Ki_H-e5EUAI.jpg"),
+    title: "Thumbnail 07",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-MPGPPkkfCbU.jpg"),
+    title: "Thumbnail 08",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-SKxg4idlEp0.jpg"),
+    title: "Thumbnail 09",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-W-Y1HX5_Y5Q.jpg"),
+    title: "Thumbnail 10",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-dGzKGE7FKkU.jpg"),
+    title: "Thumbnail 11",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-oRSLSzu4dD8.jpg"),
+    title: "Thumbnail 12",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-sZxBj0ueKgg.jpg"),
+    title: "Thumbnail 13",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
+  },
+  {
+    src: assetPath("youthumb-maxres-zlbujJBJBI8.jpg"),
+    title: "Thumbnail 14",
+    note: "Pulled from the current House Guest thumbnail set and rotated here as a quick visual reel for the prototype.",
   },
 ];
 
@@ -1094,30 +1149,70 @@ function TVRoomGameScreenArt({ game }) {
 
 function WatchHouseGuestPage() {
   const [activeGuest, setActiveGuest] = useState(0);
+  const [previousGuest, setPreviousGuest] = useState(null);
+  const [isCrossfading, setIsCrossfading] = useState(false);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
-      setActiveGuest((prev) => (prev + 1) % guestMoments.length);
+      setActiveGuest((prev) => {
+        const next = (prev + 1) % watchHouseGuestMoments.length;
+        setPreviousGuest(prev);
+        setIsCrossfading(true);
+        return next;
+      });
     }, 3200);
 
     return () => window.clearInterval(interval);
   }, []);
 
-  const currentGuest = guestMoments[activeGuest];
+  useEffect(() => {
+    if (!isCrossfading) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      setIsCrossfading(false);
+    });
+
+    const timer = window.setTimeout(() => {
+      setPreviousGuest(null);
+    }, 700);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [isCrossfading]);
+
+  const transitionToGuest = (index) => {
+    if (index === activeGuest) return;
+    setPreviousGuest(activeGuest);
+    setActiveGuest(index);
+    setIsCrossfading(true);
+  };
+
+  const currentGuest = watchHouseGuestMoments[activeGuest];
+  const previousGuestItem = previousGuest !== null ? watchHouseGuestMoments[previousGuest] : null;
 
   return (
     <section className="relative overflow-hidden rounded-[2.5rem] border border-[#d9e3e8] bg-[#eef4f6] shadow-[0_24px_80px_rgba(33,53,71,0.08)]">
       <img src={currentGuest.src} alt={currentGuest.title} className="absolute inset-0 h-full w-full object-cover" />
+      {previousGuestItem ? (
+        <img
+          src={previousGuestItem.src}
+          alt=""
+          aria-hidden="true"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${isCrossfading ? "opacity-100" : "opacity-0"}`}
+        />
+      ) : null}
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,23,34,0.84)_0%,rgba(11,23,34,0.56)_42%,rgba(11,23,34,0.32)_100%)]" />
 
-      <div className="relative z-10 grid min-h-[28rem] gap-6 px-6 py-6 md:px-8 md:py-8 lg:grid-cols-[0.9fr,1.1fr] lg:items-end">
+      <div className="relative z-10 grid min-h-[30rem] gap-6 px-6 py-6 md:px-8 md:py-8 lg:grid-cols-[0.9fr,1.1fr] lg:items-end">
         <div className="max-w-lg text-white">
           <div className="inline-flex rounded-full border border-white/14 bg-[#fadb4e] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#173149]" style={cleanSans}>
-            House Guest Games
+            Watch House Guest
           </div>
-          <div className="mt-5 text-4xl leading-[0.94] text-[#fadb4e] md:text-5xl" style={showDisplay}>THE GUEST LIST</div>
+          <div className="mt-5 text-4xl leading-[0.94] text-[#fadb4e] md:text-5xl" style={showDisplay}>THUMBNAIL REEL</div>
           <p className="mt-4 text-sm leading-7 text-white/84 md:text-base" style={cleanSans}>
-            Good company pulls up, shifts the room, and leaves you seeing them a little differently. The site should feel like that too.
+            A quick rotating pass through the House Guest thumbnails already pulled into the prototype. This keeps the page feeling more tied to the show material instead of using placeholder stills.
           </p>
           <div className="mt-6 text-[10px] font-semibold uppercase tracking-[0.32em] text-white/64" style={cleanSans}>now showing</div>
           <div className="mt-2 text-3xl leading-none text-white md:text-4xl" style={showDisplay}>{currentGuest.title}</div>
@@ -1125,36 +1220,50 @@ function WatchHouseGuestPage() {
         </div>
 
         <div className="flex flex-col gap-3 self-end lg:items-end">
-          <div className="grid w-full gap-3 sm:grid-cols-3 lg:max-w-2xl">
-            {guestMoments.map((guest, index) => (
+          <div className="grid w-full gap-3 sm:grid-cols-2 lg:max-w-[32rem] lg:max-h-[24rem] lg:overflow-y-auto lg:pr-1">
+            {watchHouseGuestMoments.map((guest, index) => (
               <button
-                key={guest.title}
-                onClick={() => setActiveGuest(index)}
-                className={`group relative overflow-hidden rounded-[1.4rem] border text-left transition ${
+                key={guest.src}
+                onClick={() => transitionToGuest(index)}
+                className={`group relative overflow-hidden rounded-[1.2rem] border text-left transition ${
                   index === activeGuest
                     ? "border-[#fadb4e] shadow-[0_12px_30px_rgba(0,0,0,0.16)]"
                     : "border-white/14 hover:border-white/28"
                 }`}
               >
-                <img src={guest.src} alt={guest.title} className="h-36 w-full object-cover transition duration-500 group-hover:scale-[1.02]" />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_22%,rgba(11,23,34,0.82)_100%)]" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/64" style={cleanSans}>guest moment</div>
-                  <div className="mt-2 text-xl leading-none text-[#fadb4e]" style={showDisplay}>{guest.title}</div>
+                <img src={guest.src} alt={guest.title} className="h-28 w-full object-cover transition duration-500 group-hover:scale-[1.02]" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,rgba(11,23,34,0.84)_100%)]" />
+                <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/64" style={cleanSans}>thumbnail</div>
+                  <div className="mt-1 text-lg leading-none text-[#fadb4e]" style={showDisplay}>{guest.title}</div>
                 </div>
               </button>
             ))}
           </div>
-          <div className="rounded-full border border-white/14 bg-white/10 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/84 backdrop-blur" style={cleanSans}>
-            maybe you’re the next neighbor
-          </div>
+          <a
+            href="https://www.youtube.com/@iamScottEvans"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full border border-white/14 bg-white/10 px-5 py-3 text-[11px] font-semibold tracking-[0.08em] text-white/84 backdrop-blur transition hover:bg-white/16 hover:text-white"
+            style={cleanSans}
+          >
+            See Who's Coming Over Next!
+          </a>
         </div>
       </div>
     </section>
   );
 }
 
-function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame }) {
+function TVRoomLibrary({
+  selectedIndex,
+  onPrev,
+  onNext,
+  onSelectGame,
+  onOpenGame,
+  launchAnimationEnabled,
+  onToggleLaunchAnimation,
+}) {
   const game = gameLibrary[selectedIndex];
   const isPlayable = game.id === "five-to-flip";
 
@@ -1190,7 +1299,19 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
             </div>
           </div>
 
-          <div className="hidden gap-2 sm:flex">
+          <div className="hidden items-center gap-2 sm:flex">
+            <button
+              type="button"
+              onClick={onToggleLaunchAnimation}
+              className={`rounded-full border px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.2em] backdrop-blur transition ${
+                launchAnimationEnabled
+                  ? "border-[#fadb4e]/36 bg-[#fadb4e]/14 text-[#fff3b0] hover:bg-[#fadb4e]/20"
+                  : "border-white/16 bg-black/20 text-white/82 hover:bg-black/28"
+              }`}
+              style={cleanSans}
+            >
+              entry animation: {launchAnimationEnabled ? "on" : "off"}
+            </button>
             <button onClick={onPrev} aria-label="Previous game" className="flex h-12 w-12 items-center justify-center rounded-full border border-white/14 bg-black/20 text-xl text-white backdrop-blur transition hover:scale-105">‹</button>
             <button onClick={onNext} aria-label="Next game" className="flex h-12 w-12 items-center justify-center rounded-full border border-white/14 bg-black/20 text-xl text-white backdrop-blur transition hover:scale-105">›</button>
           </div>
@@ -1264,7 +1385,19 @@ function TVRoomLibrary({ selectedIndex, onPrev, onNext, onSelectGame, onOpenGame
             </div>
           </div>
 
-          <div className="relative z-20 mt-6 flex justify-center gap-2 sm:hidden">
+          <div className="relative z-20 mt-6 flex flex-wrap justify-center gap-2 sm:hidden">
+            <button
+              type="button"
+              onClick={onToggleLaunchAnimation}
+              className={`rounded-full border px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.2em] backdrop-blur transition ${
+                launchAnimationEnabled
+                  ? "border-[#fadb4e]/36 bg-[#fadb4e]/14 text-[#fff3b0] hover:bg-[#fadb4e]/20"
+                  : "border-white/16 bg-black/20 text-white/82 hover:bg-black/28"
+              }`}
+              style={cleanSans}
+            >
+              entry animation: {launchAnimationEnabled ? "on" : "off"}
+            </button>
             <button onClick={onPrev} aria-label="Previous game" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/14 bg-black/28 text-xl text-white backdrop-blur transition hover:scale-105">‹</button>
             <button onClick={onNext} aria-label="Next game" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/14 bg-black/28 text-xl text-white backdrop-blur transition hover:scale-105">›</button>
           </div>
@@ -1902,6 +2035,7 @@ export default function FiveToFlipPrototype() {
   const [arrivalPage, setArrivalPage] = useState("games");
   const [hasSeenIntro, setHasSeenIntro] = useState(false);
   const [introAutoplayEnabled, setIntroAutoplayEnabled] = useState(true);
+  const [launchAnimationEnabled, setLaunchAnimationEnabled] = useState(true);
   const [activePlayer, setActivePlayer] = useState("B");
   const [holder, setHolder] = useState("A");
   const [questionsUsed, setQuestionsUsed] = useState(0);
@@ -2187,8 +2321,13 @@ export default function FiveToFlipPrototype() {
     const index = gameLibrary.findIndex((item) => item.id === game.id);
     if (index >= 0) setSelectedGameIndex(index);
     if (game.id === "five-to-flip") {
-      setTransitionGame(game);
-      setView("transition");
+      if (launchAnimationEnabled) {
+        setTransitionGame(game);
+        setView("transition");
+      } else {
+        setTransitionGame(null);
+        setView("game");
+      }
     }
   };
 
@@ -2269,7 +2408,15 @@ export default function FiveToFlipPrototype() {
                 </div>
               </div>
 
-              <TVRoomLibrary selectedIndex={selectedGameIndex} onPrev={selectPrevGame} onNext={selectNextGame} onSelectGame={selectGameByIndex} onOpenGame={openGameFromLibrary} />
+              <TVRoomLibrary
+                selectedIndex={selectedGameIndex}
+                onPrev={selectPrevGame}
+                onNext={selectNextGame}
+                onSelectGame={selectGameByIndex}
+                onOpenGame={openGameFromLibrary}
+                launchAnimationEnabled={launchAnimationEnabled}
+                onToggleLaunchAnimation={() => setLaunchAnimationEnabled((prev) => !prev)}
+              />
             </div>
           ) : null}
 
