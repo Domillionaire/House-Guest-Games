@@ -57,6 +57,8 @@ const houseGuestAssets = {
   brandLockup: assetPath("house-guest-lockup-removebg-preview.png"),
   brandLockupHorizontal: assetPath("House Guest hori.png"),
   brandLockupGamesHorizontal: assetPath("House Guest games less blank space.png"),
+  takeItToTheStagePreview: assetPath("Take it to the stage.png"),
+  singDownToLinkUpPreview: assetPath("Sing Down to Link up.png"),
 };
 
 const guestMoments = [
@@ -81,7 +83,7 @@ const slides = [
   {
     kind: "scene",
     graphic: "hotcomb",
-    title: "hot comb",
+    title: "",
     subtitle: "name that object",
     bg: "linear-gradient(135deg, #F7E17D 0%, #E9C84E 45%, #D9A63A 100%)",
     blob: "#FFF4CF",
@@ -89,23 +91,23 @@ const slides = [
   {
     kind: "scene",
     emoji: "🦜",
-    title: "bird talk",
-    subtitle: "what are you seeing",
+    title: "",
+    subtitle: "ask up to 5 questions",
     bg: "linear-gradient(135deg, #9AD34B 0%, #6FA432 45%, #4A7C1B 100%)",
     blob: "#F8F1C8",
   },
   {
     kind: "scene",
     emoji: "🐸",
-    title: "green room",
-    subtitle: "guess it fast",
+    title: "",
+    subtitle: "guess the celebrity",
     bg: "linear-gradient(135deg, #F6E46D 0%, #D9C954 45%, #9BB541 100%)",
     blob: "#FFF9DD",
   },
   { kind: "title" },
 ];
 
-const heroSlides = [0, 1, 2];
+const heroSlides = [1, 2, 0];
 
 const gameLibrary = [
   {
@@ -351,11 +353,14 @@ function SceneArt({ slide, hero = false }) {
 
 function HeroTileArt({ slide }) {
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-[0.8rem] p-2 text-center text-[#2D2442]" style={{ background: slide.bg }}>
+    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-[0.8rem] p-3 text-center" style={{ background: slide.bg }}>
       <div className="absolute -left-3 -top-3 h-10 w-10 rounded-full opacity-70" style={{ backgroundColor: slide.blob }} />
       <div className="absolute -bottom-3 -right-2 h-9 w-9 rounded-full opacity-65" style={{ backgroundColor: slide.blob }} />
-      <SlideGraphic slide={slide} tile />
-      <div className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-[#2D2442]/80">{slide.subtitle}</div>
+      <div className="relative z-10 flex h-full w-full items-center justify-center">
+        <div className="rounded-full border-2 border-[#2D2442] bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#2D2442] sm:text-xs">
+          {slide.subtitle}
+        </div>
+      </div>
     </div>
   );
 }
@@ -505,14 +510,25 @@ function RevealPanel({ rows, cols, revealed, aspectClass = "aspect-[4/3]", cover
   );
 }
 
-function HeroReveal({ fill = false, playOnce = false, onComplete = null }) {
-  const rows = 3;
-  const cols = 4;
-  const total = rows * cols;
-  const [sceneIndex, setSceneIndex] = useState(0);
-  const [openTiles, setOpenTiles] = useState([]);
-  const [finalReveal, setFinalReveal] = useState(false);
-  const [fanfare, setFanfare] = useState(false);
+function HeroRevealQuestionDots({ count = 0 }) {
+  return (
+    <div className="mt-2 flex justify-center gap-1.5">
+      {Array.from({ length: 5 }, (_, i) => (
+        <div
+          key={i}
+          className={`h-2.5 w-2.5 rounded-full border transition ${i < count ? "border-[#efc26a] bg-[#efc26a]/85" : "border-white/20 bg-white/10"}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function HeroReveal({ fill = false, playOnce = false, onComplete = null, layoutMode = "default" }) {
+  const total = 16;
+  const fullReveal = Array.from({ length: total }, (_, i) => i);
+  const [phase, setPhase] = useState(0);
+  const [revealed, setRevealed] = useState([]);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -531,70 +547,49 @@ function HeroReveal({ fill = false, playOnce = false, onComplete = null }) {
     const runCycle = () => {
       clearTimers();
       const heroMoments = buildSporadicHeroMoments(total);
-      let cursor = 250;
+      let cursor = 320;
 
-      heroMoments.forEach((moment) => {
+      setPhase(0);
+      setRevealed([]);
+      setActiveSlideIndex(0);
+
+      heroMoments.forEach((moment, index) => {
         addTimer(() => {
           if (cancelled) return;
-          setSceneIndex(moment.slide);
-          setOpenTiles([]);
-          setFinalReveal(false);
-          setFanfare(false);
+          setPhase(index + 1);
+          setActiveSlideIndex(moment.slide);
+          setRevealed(moment.tiles);
         }, cursor);
 
-        cursor += 260;
-
-        addTimer(() => {
-          if (cancelled) return;
-          setOpenTiles(moment.tiles);
-        }, cursor);
-
-        cursor += 1650;
+        cursor += index === 1 ? 980 : 860;
 
         addTimer(() => {
           if (cancelled) return;
-          setOpenTiles([]);
+          setRevealed([]);
         }, cursor);
 
-        cursor += 920;
+        cursor += index === 1 ? 560 : 500;
       });
 
       addTimer(() => {
         if (cancelled) return;
-        setSceneIndex(3);
-        setOpenTiles([]);
-        setFinalReveal(false);
-        setFanfare(false);
-      }, cursor);
-
-      cursor += 360;
+        setPhase(4);
+        setRevealed(fullReveal);
+      }, cursor + 140);
 
       addTimer(() => {
         if (cancelled) return;
-        setFinalReveal(true);
-      }, cursor);
+        setPhase(5);
+      }, cursor + 140 + 1180);
 
-      cursor += 1350;
-
-      addTimer(() => {
-        if (cancelled) return;
-        setFanfare(true);
-      }, cursor);
-
-      cursor += playOnce ? 1200 : 2350;
+      cursor += playOnce ? 3200 : 3800;
 
       addTimer(() => {
         if (cancelled) return;
-
         if (playOnce) {
           onComplete?.();
           return;
         }
-
-        setFinalReveal(false);
-        setFanfare(false);
-        setOpenTiles([]);
-        setSceneIndex(0);
         runCycle();
       }, cursor);
     };
@@ -607,85 +602,286 @@ function HeroReveal({ fill = false, playOnce = false, onComplete = null }) {
     };
   }, [playOnce, onComplete, total]);
 
-  const activeSet = new Set(finalReveal ? Array.from({ length: total }, (_, i) => i) : openTiles);
+  const isSubheroLayout = fill && layoutMode === "subhero";
+
+  const wrapperClass = fill
+    ? "relative h-full w-full overflow-hidden rounded-[1.4rem] bg-[linear-gradient(180deg,#15100d_0%,#0f0b09_100%)]"
+    : "relative overflow-hidden rounded-[1.8rem] border-4 border-[#2D2442] bg-white p-3 shadow-[0_14px_0_#2D2442]";
+
+  const innerClass = fill
+    ? "relative h-full w-full overflow-hidden rounded-[1.4rem]"
+    : "relative aspect-[16/9] overflow-hidden rounded-[1.35rem] border-2 border-[#2D2442]";
+
+  const framePaddingClass = isSubheroLayout ? "px-1 py-1 sm:px-1.5 sm:py-1.5" : "px-5 py-5 sm:px-6 sm:py-6";
+  const boardWrapClass = isSubheroLayout ? "relative w-full max-w-none" : "relative w-full max-w-[40rem]";
+  const boardScaleClass = isSubheroLayout ? "mx-auto w-full max-w-none" : "mx-auto w-full max-w-[36rem]";
+  const boardAspectClass = isSubheroLayout ? "aspect-[2.05/1]" : "aspect-[1.12/1]";
+  const chromeInsetClass = isSubheroLayout ? "inset-[6px]" : "inset-[10px]";
+  const boardInsetClass = isSubheroLayout ? "inset-[10px]" : "inset-[18px]";
+  const gridGapClass = isSubheroLayout ? "gap-[6px]" : "gap-[8px]";
+  const outerGlowClass = isSubheroLayout
+    ? "absolute inset-[1.2%] rounded-[1.5rem] bg-[radial-gradient(circle_at_top,rgba(255,210,138,0.12),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_30%)] blur-xl"
+    : fill
+      ? "absolute inset-0 rounded-[1.4rem] bg-[radial-gradient(circle_at_top,rgba(255,210,138,0.14),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.10),transparent_28%)] blur-xl"
+      : "absolute -inset-4 rounded-[2rem] bg-[radial-gradient(circle_at_top,rgba(255,210,138,0.14),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.10),transparent_28%)] blur-xl";
+  const boardFrameStyle = undefined;
 
   return (
     <div className={fill ? "relative h-full w-full overflow-hidden" : "relative mx-auto max-w-4xl"}>
-      <div
-        className={`${fill ? "absolute inset-0 rounded-[1.4rem]" : "absolute -inset-4 rounded-[2rem]"} transition-all duration-700 ${fanfare ? "bg-white/35 blur-xl" : "bg-transparent"}`}
-      />
-      <div
-        className={fill
-          ? "relative h-full w-full overflow-hidden rounded-[1.4rem] bg-transparent"
-          : "relative overflow-hidden rounded-[1.8rem] border-4 border-[#2D2442] bg-white p-3 shadow-[0_14px_0_#2D2442]"
-        }
-      >
-        <div
-          className={fill
-            ? "relative h-full w-full overflow-hidden rounded-[1.4rem] bg-white"
-            : "relative aspect-[16/9] overflow-hidden rounded-[1.35rem] border-2 border-[#2D2442] bg-white"
-          }
-        >
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,#E5D268_0%,#F8F1C8_100%)]" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-[82%] w-[92%] rounded-[1.2rem] border-2 border-[#2D2442]/20 bg-white/20" />
-          </div>
-          <div className={`absolute inset-0 transition-opacity duration-700 ${finalReveal || fanfare ? "opacity-100" : "opacity-0"}`}>
-            <SceneArt slide={slides[3]} hero />
-          </div>
+      <div className={outerGlowClass} />
 
-          <div
-            className="absolute inset-0 grid gap-[8px] p-[8px]"
-            style={{
-              gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-              gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-            }}
-          >
-            {Array.from({ length: total }, (_, index) => {
-              const isOpen = activeSet.has(index);
-              const stagger = finalReveal ? index * 95 : 0;
-              return (
-                <div key={index} className="[perspective:1300px]">
+      <div className={wrapperClass}>
+        <div className={innerClass}>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.10),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+
+          <div className={`relative z-10 flex h-full items-center justify-center ${framePaddingClass}`}>
+            <div className={boardWrapClass}>
+              <div className={boardScaleClass}>
+                <div className={`relative overflow-hidden rounded-[1.35rem] border border-[#6f5436] bg-[linear-gradient(180deg,#2a1f18_0%,#17110e_100%)] shadow-[0_18px_40px_rgba(0,0,0,0.28)] ${boardAspectClass}`} style={boardFrameStyle}>
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+                  <div className={`absolute ${chromeInsetClass} rounded-[1rem] border border-white/5 bg-[linear-gradient(180deg,#231a15_0%,#15100d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`} />
+
+                  <div className={`absolute ${boardInsetClass} overflow-hidden rounded-[0.95rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]`}>
+                    {phase >= 5 ? (
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center px-[8%] text-center">
+                          <div className="text-[clamp(8px,0.95vw,13px)] font-semibold uppercase tracking-[0.32em] text-[#d9b476]/78" style={cleanSans}>
+                            house guest games
+                          </div>
+                          <div className="mt-[4%] text-[clamp(24px,6vw,72px)] leading-none text-[#fff1d5]" style={roundedDisplay}>
+                            Five to Flip
+                          </div>
+                          <div className="mt-[3%] text-[clamp(8px,0.95vw,13px)] font-semibold uppercase tracking-[0.22em] text-[#f0d8ac]/78" style={cleanSans}>
+                            guess · reveal · repeat
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <GameImageBoardScene row={0} col={0} rows={1} cols={1} image={GAME_IMAGE_LIBRARY[0]} />
+                    )}
+                  </div>
+
                   <div
-                    className="relative h-full w-full"
+                    className={`absolute ${boardInsetClass} grid ${gridGapClass}`}
                     style={{
-                      transformStyle: "preserve-3d",
-                      transform: isOpen ? "rotateY(180deg)" : "rotateY(0deg)",
-                      opacity: finalReveal && isOpen ? 0 : 1,
-                      transitionProperty: "transform, opacity",
-                      transitionDuration: finalReveal ? "1050ms, 220ms" : "900ms, 0ms",
-                      transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1), ease",
-                      transitionDelay: `${stagger}ms, ${finalReveal && isOpen ? stagger + 700 : 0}ms`,
+                      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                      gridTemplateRows: "repeat(4, minmax(0, 1fr))",
                     }}
                   >
-                    <div
-                      className="absolute inset-0 rounded-[0.95rem] border-2 border-[#2D2442] bg-[linear-gradient(180deg,#93B437_0%,#75912B_100%)]"
-                      style={{
-                        backfaceVisibility: "hidden",
-                        boxShadow: fanfare ? "0 0 0 4px rgba(255,255,255,0.25), inset 0 1px 0 rgba(255,255,255,0.32)" : "inset 0 1px 0 rgba(255,255,255,0.32)",
-                      }}
-                    >
-                      <div className="absolute inset-0 rounded-[0.8rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.24),transparent_42%)]" />
-                      <div className="absolute inset-0 rounded-[0.8rem] bg-[linear-gradient(135deg,transparent_0%,transparent_45%,rgba(246,228,109,0.22)_45%,rgba(246,228,109,0.22)_55%,transparent_55%,transparent_100%)]" />
-                    </div>
+                    {Array.from({ length: total }, (_, index) => {
+                      const isRevealed = revealed.includes(index);
+                      return (
+                        <div key={index} className="[perspective:1200px]">
+                          <div
+                            className="relative h-full w-full"
+                            style={{
+                              transformStyle: "preserve-3d",
+                              transform: isRevealed ? "rotateY(180deg)" : "rotateY(0deg)",
+                              transitionProperty: "transform, opacity",
+                              transitionDuration: "900ms, 240ms",
+                              transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1), ease",
+                              transitionDelay: `${phase >= 4 ? index * 28 : 0}ms, ${phase >= 4 && isRevealed ? index * 28 + 700 : 0}ms`,
+                              opacity: phase >= 4 && isRevealed ? 0 : 1,
+                            }}
+                          >
+                            <div
+                              className="absolute inset-0 overflow-hidden rounded-[0.82rem] border border-[#b58b55] bg-[radial-gradient(circle_at_top,rgba(255,231,178,0.18),transparent_30%),linear-gradient(180deg,#8d7965_0%,#6d5a4c_52%,#534236_100%)] shadow-[0_10px_16px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.12)]"
+                              style={{ backfaceVisibility: "hidden" }}
+                            >
+                              <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.12)_0%,transparent_28%,transparent_72%,rgba(0,0,0,0.10)_100%)]" />
+                              <div className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,211,120,0.24)_0%,rgba(255,211,120,0.10)_38%,transparent_70%)] blur-[1px]" />
+                              <div
+                                className="absolute inset-0 flex items-center justify-center text-[clamp(1.4rem,3vw,2.2rem)] font-black text-[#ffe5ad]"
+                                style={{
+                                  ...cleanSans,
+                                  textShadow: "0 0 10px rgba(255,204,102,0.30), 0 0 22px rgba(255,170,70,0.18), 0 2px 0 rgba(92,55,24,0.55)",
+                                }}
+                              >
+                                ?
+                              </div>
+                            </div>
 
-                    <div className="absolute inset-0 overflow-hidden rounded-[0.95rem] border-2 border-[#2D2442] bg-white" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-                      {!finalReveal && isOpen ? <HeroTileArt slide={slides[sceneIndex]} /> : <div className="h-full w-full bg-white" />}
-                    </div>
+                            <div
+                              className="absolute inset-0 overflow-hidden rounded-[0.82rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]"
+                              style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                            >
+                              {phase < 4 ? <HeroTileArt slide={slides[activeSlideIndex]} /> : <div className="h-full w-full bg-transparent" />}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-
-          {fanfare ? (
-            <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
-              <div className="rounded-full border-2 border-[#2D2442] bg-white px-5 py-2 text-sm font-black uppercase tracking-[0.22em] text-[#2D2442] shadow-[0_6px_0_#2D2442]">
-                welcome in
               </div>
             </div>
-          ) : null}
+          </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function HeroRevealSubhero({ playOnce = false, onComplete = null }) {
+  const rows = 3;
+  const cols = 4;
+  const total = rows * cols;
+  const fullReveal = Array.from({ length: total }, (_, i) => i);
+  const [phase, setPhase] = useState(0);
+  const [revealed, setRevealed] = useState([]);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    let timers = [];
+
+    const clearTimers = () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      timers = [];
+    };
+
+    const addTimer = (fn, ms) => {
+      const timer = window.setTimeout(fn, ms);
+      timers.push(timer);
+    };
+
+    const runCycle = () => {
+      clearTimers();
+      const heroMoments = buildSporadicHeroMoments(total);
+      let cursor = 320;
+
+      setPhase(0);
+      setRevealed([]);
+      setActiveSlideIndex(0);
+
+      heroMoments.forEach((moment, index) => {
+        addTimer(() => {
+          if (cancelled) return;
+          setPhase(index + 1);
+          setActiveSlideIndex(moment.slide);
+          setRevealed(moment.tiles);
+        }, cursor);
+
+        cursor += index === 1 ? 980 : 860;
+
+        addTimer(() => {
+          if (cancelled) return;
+          setRevealed([]);
+        }, cursor);
+
+        cursor += index === 1 ? 560 : 500;
+      });
+
+      addTimer(() => {
+        if (cancelled) return;
+        setPhase(4);
+        setRevealed(fullReveal);
+      }, cursor + 140);
+
+      addTimer(() => {
+        if (cancelled) return;
+        setPhase(5);
+      }, cursor + 140 + 1180);
+
+      cursor += playOnce ? 3200 : 3800;
+
+      addTimer(() => {
+        if (cancelled) return;
+        if (playOnce) {
+          onComplete?.();
+          return;
+        }
+        runCycle();
+      }, cursor);
+    };
+
+    runCycle();
+
+    return () => {
+      cancelled = true;
+      clearTimers();
+    };
+  }, [playOnce, onComplete, total]);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden rounded-[2rem]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.10),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+      <div className="absolute inset-[7px] rounded-[1.72rem] border border-white/6 bg-[linear-gradient(180deg,#231a15_0%,#15100d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]" />
+
+      <div className="absolute inset-[12px] overflow-hidden rounded-[1.48rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]">
+        {phase >= 5 ? (
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%),linear-gradient(180deg,#2a1f18_0%,#17110e_100%)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-[8%] text-center">
+              <div className="text-[clamp(8px,0.95vw,13px)] font-semibold uppercase tracking-[0.32em] text-[#d9b476]/78" style={cleanSans}>
+                house guest games
+              </div>
+              <div className="mt-[4%] text-[clamp(24px,6vw,72px)] leading-none text-[#fff1d5]" style={roundedDisplay}>
+                Five to Flip
+              </div>
+              <div className="mt-[3%] text-[clamp(8px,0.95vw,13px)] font-semibold uppercase tracking-[0.22em] text-[#f0d8ac]/78" style={cleanSans}>
+                guess · reveal · repeat
+              </div>
+            </div>
+          </div>
+        ) : (
+          <GameImageBoardScene row={0} col={0} rows={1} cols={1} image={GAME_IMAGE_LIBRARY[0]} />
+        )}
+      </div>
+
+      <div
+        className="absolute inset-[12px] grid gap-[7px]"
+        style={{
+          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+        }}
+      >
+        {Array.from({ length: total }, (_, index) => {
+          const isRevealed = revealed.includes(index);
+          return (
+            <div key={index} className="[perspective:1200px]">
+              <div
+                className="relative h-full w-full"
+                style={{
+                  transformStyle: "preserve-3d",
+                  transform: isRevealed ? "rotateY(180deg)" : "rotateY(0deg)",
+                  transitionProperty: "transform, opacity",
+                  transitionDuration: "900ms, 240ms",
+                  transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1), ease",
+                  transitionDelay: `${phase >= 4 ? index * 28 : 0}ms, ${phase >= 4 && isRevealed ? index * 28 + 700 : 0}ms`,
+                  opacity: phase >= 4 && isRevealed ? 0 : 1,
+                }}
+              >
+                <div
+                  className="absolute inset-0 overflow-hidden rounded-[0.96rem] border border-[#b58b55] bg-[radial-gradient(circle_at_top,rgba(255,231,178,0.18),transparent_30%),linear-gradient(180deg,#8d7965_0%,#6d5a4c_52%,#534236_100%)] shadow-[0_10px_16px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.12)]"
+                  style={{ backfaceVisibility: "hidden" }}
+                >
+                  <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.12)_0%,transparent_28%,transparent_72%,rgba(0,0,0,0.10)_100%)]" />
+                  <div className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,211,120,0.24)_0%,rgba(255,211,120,0.10)_38%,transparent_70%)] blur-[1px]" />
+                  <div
+                    className="absolute inset-0 flex items-center justify-center text-[clamp(1.35rem,2.8vw,2rem)] font-black text-[#ffe5ad]"
+                    style={{
+                      ...cleanSans,
+                      textShadow: "0 0 10px rgba(255,204,102,0.30), 0 0 22px rgba(255,170,70,0.18), 0 2px 0 rgba(92,55,24,0.55)",
+                    }}
+                  >
+                    ?
+                  </div>
+                </div>
+
+                <div
+                  className="absolute inset-0 overflow-hidden rounded-[0.96rem] border border-[#8f714c] bg-[#18120f] shadow-[0_10px_18px_rgba(0,0,0,0.16)]"
+                  style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                >
+                  {phase < 4 ? <HeroTileArt slide={slides[activeSlideIndex]} /> : <div className="h-full w-full bg-transparent" />}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -843,27 +1039,87 @@ function LandingExperience({ onEnter, introAlreadySeen = false, onIntroDismiss }
   );
 }
 
+function HouseGamePreviewArt({ id }) {
+  if (id === "five-to-flip") {
+    return (
+      <>
+        <div className="absolute inset-0">
+          <HeroRevealSubhero />
+        </div>
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,20,30,0.76)_0%,rgba(8,20,30,0.20)_40%,rgba(8,20,30,0.74)_100%)]" />
+      </>
+    );
+  }
+
+  const config =
+    id === "take-it-to-the-stage"
+      ? {
+          src: houseGuestAssets.takeItToTheStagePreview,
+          alt: "Take It to the Stage concept preview",
+          objectPosition: "50% 46%",
+          chip: "concept preview",
+          accentGlow: "rgba(250,219,78,0.18)",
+          accentLine: "rgba(250,219,78,0.72)",
+        }
+      : {
+          src: houseGuestAssets.singDownToLinkUpPreview,
+          alt: "Sing Down to Link Up concept preview",
+          objectPosition: "50% 40%",
+          chip: "concept preview",
+          accentGlow: "rgba(96,165,250,0.18)",
+          accentLine: "rgba(120,190,255,0.72)",
+        };
+
+  return (
+    <div className="absolute inset-0 overflow-hidden rounded-[2rem]">
+      <img
+        src={config.src}
+        alt={config.alt}
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{ objectPosition: config.objectPosition }}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,24,0.10)_0%,rgba(7,16,24,0.08)_24%,rgba(7,16,24,0.24)_50%,rgba(7,16,24,0.84)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_22%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-[44%] bg-[linear-gradient(180deg,transparent_0%,rgba(7,16,24,0.16)_18%,rgba(7,16,24,0.88)_100%)]" />
+      <div
+        className="absolute left-1/2 top-[-8%] h-32 w-40 -translate-x-1/2 rounded-full blur-3xl"
+        style={{ backgroundColor: config.accentGlow }}
+      />
+      <div
+        className="absolute inset-x-6 bottom-5 h-[2px] rounded-full"
+        style={{ backgroundColor: config.accentLine }}
+      />
+      <div className="absolute right-4 top-4 rounded-full border border-white/14 bg-[rgba(7,16,24,0.46)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/84 backdrop-blur" style={cleanSans}>
+        {config.chip}
+      </div>
+    </div>
+  );
+}
+
 function GamesBridgeSection({ onEnter }) {
   const [activeCard, setActiveCard] = useState(0);
 
-  const bridgeCards = [
+  const previewGames = [
     {
-      id: 0,
-      step: "01 · first up",
-      title: "Play Five to Flip",
-      body: "Five questions. One celeb. One hidden image waiting on the screen.",
+      id: "five-to-flip",
+      step: "01 · live now",
+      title: "Five to Flip",
+      body: "Five questions. One celeb. One hidden image.",
+      accent: "gold",
     },
     {
-      id: 1,
-      step: "02 · make your guess",
-      title: "Ask. Narrow it down.",
-      body: "Use up to five questions, read the clues, and decide when it’s time to make the call.",
+      id: "take-it-to-the-stage",
+      step: "02 · from the house",
+      title: "Take It to the Stage",
+      body: "Answer trivia, earn the roll, survive mic check.",
+      accent: "rose",
     },
     {
-      id: 2,
-      step: "03 · get the reveal",
-      title: "Flip it and find out.",
-      body: "A right guess earns the reveal. Then the room gets to see who really had it figured out.",
+      id: "sing-down-to-link-up",
+      step: "03 · from the house",
+      title: "Sing Down to Link Up",
+      body: "Sing the prompt, buzz in, then solve the linked board.",
+      accent: "blue",
     },
   ];
 
@@ -874,90 +1130,83 @@ function GamesBridgeSection({ onEnter }) {
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(223,233,238,0.18)_0%,rgba(223,233,238,0.04)_14%,rgba(223,233,238,0.04)_86%,rgba(223,233,238,0.18)_100%)]" />
 
       <section className="relative mx-auto my-4 max-w-7xl overflow-hidden rounded-[2.5rem] bg-[rgba(13,29,42,0.88)] shadow-[0_22px_70px_rgba(0,0,0,0.12)] backdrop-blur-[2px] md:my-5">
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,20,30,0.94)_0%,rgba(8,20,30,0.84)_34%,rgba(8,20,30,0.76)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(157,204,226,0.08),transparent_26%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,20,30,0.94)_0%,rgba(8,20,30,0.84)_34%,rgba(8,20,30,0.76)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.10),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(157,204,226,0.08),transparent_26%)]" />
 
-      <div className="relative z-10 grid gap-8 px-6 py-8 md:px-8 md:py-10 lg:grid-cols-[0.92fr,1.08fr] lg:items-center">
-        <div className="max-w-2xl text-white">
-          <div className="inline-flex rounded-full border border-white/14 bg-[#fadb4e] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#173149]" style={cleanSans}>
-            from the house
-          </div>
-          <div className="mt-5 text-4xl leading-[0.94] text-[#fadb4e] md:text-5xl" style={showDisplay}>
-            WE ALWAYS INVITE OUR HOUSE GUESTS TO PLAY A GAME.
-          </div>
-          <div className="mt-3 text-3xl leading-[0.98] text-white md:text-4xl" style={roundedDisplay}>
-            Now you can too, Neighbor.
-          </div>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <button
-              onClick={onEnter}
-              className="rounded-full bg-[#fadb4e] px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_14px_26px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:brightness-95"
-              style={cleanSans}
-            >
-              enter the game room
-            </button>
-            <div className="rounded-full border border-white/14 bg-white/10 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/84 backdrop-blur" style={cleanSans}>
-              choose · guess · reveal
+        <div className="relative z-10 grid gap-8 px-6 py-8 md:px-8 md:py-10 lg:grid-cols-[0.92fr,1.08fr] lg:items-center">
+          <div className="max-w-2xl text-white">
+            <div className="inline-flex rounded-full border border-white/14 bg-[#fadb4e] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#173149]" style={cleanSans}>
+              from the house
+            </div>
+            <div className="mt-5 text-4xl leading-[0.94] text-[#fadb4e] md:text-5xl" style={showDisplay}>
+              HOUSE GUEST HAS PLENTY OF GAMES.
+            </div>
+            <div className="mt-3 text-3xl leading-[0.98] text-white md:text-4xl" style={roundedDisplay}>
+              Five to Flip is first. More could be next.
+            </div>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-white/80 md:text-base" style={cleanSans}>
+              The game room starts with one playable prototype, but the house can hold a whole slate. Think of these as coming attractions pulled from the same energy.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <button
+                onClick={onEnter}
+                className="rounded-full bg-[#fadb4e] px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#173149] shadow-[0_14px_26px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:brightness-95"
+                style={cleanSans}
+              >
+                enter the game room
+              </button>
+              <div className="rounded-full border border-white/14 bg-white/10 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/84 backdrop-blur" style={cleanSans}>
+                one live · more previews
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className="flex h-[34rem] flex-col gap-4 md:h-[38rem]"
-          onMouseLeave={() => setActiveCard(0)}
-        >
-          {bridgeCards.map((card, index) => {
-            const isActive = activeCard === index;
+          <div className="flex h-[34rem] flex-col gap-4 md:h-[38rem]" onMouseLeave={() => setActiveCard(0)}>
+            {previewGames.map((card, index) => {
+              const isActive = activeCard === index;
 
-            return (
-              <button
-                key={card.id}
-                type="button"
-                onMouseEnter={() => setActiveCard(index)}
-                onFocus={() => setActiveCard(index)}
-                onClick={() => setActiveCard(index)}
-                className={`group relative overflow-hidden rounded-[2rem] border border-white/12 bg-[rgba(255,255,255,0.06)] px-5 py-5 text-left shadow-[0_14px_30px_rgba(0,0,0,0.12)] backdrop-blur transition-all duration-300 ease-out hover:border-[#fadb4e]/70 min-h-0 ${
-                  isActive
-                    ? "flex-[2.9] border-[#fadb4e]/60 bg-[rgba(255,255,255,0.09)] shadow-[0_24px_48px_rgba(0,0,0,0.20)]"
-                    : "flex-1 bg-[rgba(255,255,255,0.05)]"
-                }`}
-              >
-                <div className={`absolute inset-0 transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-70"} ${
-                  index === 0
-                    ? "bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.00)_100%)]"
-                    : index === 1
-                      ? "bg-[radial-gradient(circle_at_top_right,rgba(250,219,78,0.10),transparent_30%)]"
-                      : "bg-[radial-gradient(circle_at_bottom_left,rgba(157,204,226,0.10),transparent_30%)]"
-                }`} />
+              return (
+                <button
+                  key={card.id}
+                  type="button"
+                  onMouseEnter={() => setActiveCard(index)}
+                  onFocus={() => setActiveCard(index)}
+                  onClick={() => setActiveCard(index)}
+                  className={`group relative overflow-hidden rounded-[2rem] border border-white/12 bg-[rgba(255,255,255,0.06)] px-5 py-5 text-left shadow-[0_14px_30px_rgba(0,0,0,0.12)] backdrop-blur transition-all duration-300 ease-out hover:border-[#fadb4e]/70 min-h-0 ${
+                    isActive
+                      ? "flex-[2.9] border-[#fadb4e]/60 bg-[rgba(255,255,255,0.09)] shadow-[0_24px_48px_rgba(0,0,0,0.20)]"
+                      : "flex-1 bg-[rgba(255,255,255,0.05)]"
+                  }`}
+                >
+                  <div
+                    className={`absolute inset-0 transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-70"} ${
+                      card.accent === "gold"
+                        ? "bg-[radial-gradient(circle_at_top_left,rgba(250,219,78,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.00)_100%)]"
+                        : card.accent === "rose"
+                          ? "bg-[radial-gradient(circle_at_top_right,rgba(244,114,182,0.12),transparent_28%)]"
+                          : "bg-[radial-gradient(circle_at_bottom_left,rgba(96,165,250,0.12),transparent_30%)]"
+                    }`}
+                  />
 
-                {index === 0 && isActive ? (
-                  <>
-                    <div className="absolute inset-0">
-                      <HeroReveal fill />
+                  {isActive ? <HouseGamePreviewArt id={card.id} /> : null}
+
+                  <div className="relative z-10 flex h-full min-h-0 flex-col justify-between text-white">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/58" style={cleanSans}>{card.step}</div>
+
+                    <div className="mt-4">
+                      <div className={`leading-[0.94] transition-all duration-300 ${isActive ? "text-[#fadb4e]" : "text-white"} ${card.id === "five-to-flip" ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl"}`} style={card.id === "five-to-flip" ? showDisplay : roundedDisplay}>
+                        {card.title}
+                      </div>
+                      <p className={`mt-3 max-w-xl text-sm leading-7 text-white/78 transition-all duration-300 ${isActive ? "opacity-100" : "opacity-0 max-h-0 overflow-hidden mt-0"}`} style={cleanSans}>
+                        {card.body}
+                      </p>
                     </div>
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,20,30,0.78)_0%,rgba(8,20,30,0.22)_40%,rgba(8,20,30,0.72)_100%)]" />
-                  </>
-                ) : null}
-
-                <div className="relative z-10 flex h-full min-h-0 flex-col justify-between text-white">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/58" style={cleanSans}>{card.step}</div>
-
-                  <div className="mt-4">
-                    <div className={`leading-[0.94] transition-all duration-300 ${isActive ? "text-[#fadb4e]" : "text-white"} ${index === 0 ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl"}`} style={index === 0 ? showDisplay : roundedDisplay}>
-                      {card.title}
-                    </div>
-                    <p className={`mt-3 max-w-xl text-sm leading-7 text-white/78 transition-all duration-300 ${isActive ? "opacity-100" : "opacity-0 max-h-0 overflow-hidden mt-0"}`} style={cleanSans}>
-                      {card.body}
-                    </p>
                   </div>
-
-                  
-                </div>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
       </section>
     </div>
   );
@@ -1406,6 +1655,37 @@ function normalizeGameImageGuess(value) {
 }
 
 function GameImageBoardScene({ row, col, rows, cols, image }) {
+  if (image?.kind === "title-board") {
+    return (
+      <div className="relative h-full w-full overflow-hidden rounded-[0.78rem] bg-[#17110d]">
+        <div
+          className="absolute"
+          style={{
+            width: `${cols * 100}%`,
+            height: `${rows * 100}%`,
+            left: `-${col * 100}%`,
+            top: `-${row * 100}%`,
+            background:
+              "radial-gradient(circle_at_top,rgba(255,214,143,0.12),transparent_22%), linear-gradient(180deg,#2a1f18_0%,#17110e_100%)",
+          }}
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(255,182,82,0.08),transparent_24%)]" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-[8%] text-center">
+            <div className="text-[clamp(8px,0.95vw,13px)] font-semibold uppercase tracking-[0.32em] text-[#d9b476]/78" style={cleanSans}>
+              house guest games
+            </div>
+            <div className="mt-[4%] text-[clamp(24px,6vw,72px)] leading-none text-[#fff1d5]" style={roundedDisplay}>
+              Five to Flip
+            </div>
+            <div className="mt-[3%] text-[clamp(8px,0.95vw,13px)] font-semibold uppercase tracking-[0.22em] text-[#f0d8ac]/78" style={cleanSans}>
+              guess · reveal · repeat
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const imageSrc = gameImagePath(image.filename);
 
   return (
@@ -1500,12 +1780,12 @@ function GamePagePhoneShell({ title, subtitle, children, tilt = 0 }) {
     <div className="flex justify-center xl:block" style={{ transform: `rotate(${tilt}deg)` }}>
       <div className="relative w-[260px] md:w-[280px] xl:w-[260px]">
         <div className="relative rounded-[2.6rem] bg-[linear-gradient(180deg,#151313_0%,#090909_100%)] p-[10px] shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
-          <div className="absolute top-[6px] left-1/2 -translate-x-1/2 h-[6px] w-[70px] rounded-full bg-black/70" />
+          <div className="absolute left-1/2 top-[6px] h-[6px] w-[70px] -translate-x-1/2 rounded-full bg-black/70" />
           <div className="absolute left-[-3px] top-[120px] h-[40px] w-[4px] rounded bg-black/70" />
           <div className="absolute left-[-3px] top-[170px] h-[30px] w-[4px] rounded bg-black/70" />
           <div className="absolute right-[-3px] top-[130px] h-[50px] w-[4px] rounded bg-black/70" />
 
-          <div className="rounded-[2rem] border border-[#2f2119] bg-[radial-gradient(circle_at_top,rgba(255,214,148,0.07),transparent_26%),linear-gradient(180deg,#211712_0%,#16100d_52%,#0f0b0a_100%)] text-white px-4 py-5 h-[520px] flex flex-col shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+          <div className="rounded-[2rem] border border-[#2f2119] bg-[radial-gradient(circle_at_top,rgba(255,214,148,0.07),transparent_26%),linear-gradient(180deg,#211712_0%,#16100d_52%,#0f0b0a_100%)] px-4 py-5 text-white h-[520px] flex flex-col shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
             <div className="text-[10px] uppercase tracking-[0.26em] text-[#d7b98b]/72" style={cleanSans}>{title}</div>
             <div className="mt-3 text-sm text-[#f0e2ce]/82" style={cleanSans}>{subtitle}</div>
             <div className="mt-4 space-y-3 flex-1 overflow-y-auto pr-1">{children}</div>
@@ -1554,7 +1834,7 @@ function GamePageChip({ children, tone = "neutral" }) {
   };
 
   return (
-    <div className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${tones[tone]}`} style={cleanSans}>
+    <div className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${tones[tone]}`} style={cleanSans}>
       {children}
     </div>
   );
@@ -1579,17 +1859,17 @@ function GamePageTextInput({ value, onChange, onSubmit, placeholder }) {
 
 function GamePageCelebPreviewCard({ name }) {
   return (
-    <div className="rounded-[1.25rem] border border-[#9b7448] bg-[radial-gradient(circle_at_top,rgba(255,216,149,0.12),transparent_26%),linear-gradient(180deg,rgba(66,46,33,0.96)_0%,rgba(31,21,17,0.98)_100%)] p-4 shadow-[0_14px_28px_rgba(0,0,0,0.24)]">
+    <div className="rounded-[1.15rem] border border-[#9b7448] bg-[radial-gradient(circle_at_top,rgba(255,216,149,0.12),transparent_26%),linear-gradient(180deg,rgba(66,46,33,0.96)_0%,rgba(31,21,17,0.98)_100%)] p-3.5 shadow-[0_14px_28px_rgba(0,0,0,0.24)]">
       <div className="flex items-center justify-between gap-2">
-        <div className="text-[10px] uppercase tracking-[0.24em] text-[#d9b476]/85" style={cleanSans}>
+        <div className="text-[9px] uppercase tracking-[0.22em] text-[#d9b476]/85" style={cleanSans}>
           private celeb card
         </div>
         <GamePageChip tone="warm">holder only</GamePageChip>
       </div>
-      <div className="mt-3 text-xs leading-5 text-[#f0deca]/68" style={cleanSans}>
+      <div className="mt-2.5 text-[12px] leading-5 text-[#f0deca]/68" style={cleanSans}>
         Keep this hidden from the other player while they ask questions.
       </div>
-      <div className="mt-4 rounded-[1rem] border border-[#5f4431] bg-[linear-gradient(180deg,rgba(255,250,242,0.06)_0%,rgba(255,250,242,0.03)_100%)] px-4 py-6 text-center text-3xl text-[#f7eddc] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" style={roundedDisplay}>
+      <div className="mt-3 rounded-[0.95rem] border border-[#5f4431] bg-[linear-gradient(180deg,rgba(255,250,242,0.06)_0%,rgba(255,250,242,0.03)_100%)] px-4 py-5 text-center text-[2rem] text-[#f7eddc] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" style={roundedDisplay}>
         {name}
       </div>
     </div>
